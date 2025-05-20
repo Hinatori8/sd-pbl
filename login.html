@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<title>ログイン - 教室予約</title>
+<style>
+ body{font-family:"Segoe UI",sans-serif;background:#f0f4f7;display:flex;
+      justify-content:center;align-items:center;height:100vh;margin:0}
+ .card{background:#fff;border:1px solid #ddd;padding:40px 60px;border-radius:12px;
+       box-shadow:0 4px 12px rgba(0,0,0,.08);text-align:center}
+ input{padding:8px 12px;font-size:18px;border:1px solid #ccc;border-radius:6px;
+       width:200px}
+ button{margin-top:20px;padding:10px 24px;font-size:18px;border:none;
+        border-radius:6px;background:#2d98da;color:#fff;cursor:pointer}
+ button:hover{background:#257ac1}
+ .error{color:#e74c3c;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>ログイン</h1>
+  <p>学籍番号（先頭 g + 8 桁）を入力してください</p>
+  <input id="uid" placeholder="g12345678" maxlength="9" autofocus>
+  <div id="err" class="error"></div>
+  <button id="loginBtn">ログイン</button>
+</div>
+
+<script>
+document.getElementById('loginBtn').onclick = () => {
+  const uid = document.getElementById('uid').value.trim();
+  if(!/^g\d{8}$/.test(uid)){
+    document.getElementById('err').textContent = '形式が正しくありません';
+    return;
+  }
+  localStorage.setItem('uid', uid);
+  location.href = 'index.html';
+};
+</script>
+</body>
+</html>
