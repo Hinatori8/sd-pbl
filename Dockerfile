@@ -2,11 +2,14 @@
 FROM debian:stable-slim
 
 # Apache, ビルドに必要なツールをインストール
-RUN apt-get update && \
-    apt-get install -y apache2 apache2-dev gcc make && \
-    a2enmod cgi && \
-    mkdir -p /var/www/html /var/www/cgi-bin
-
+RUN echo "\
+ScriptAlias /cgi-bin/ /var/www/html/cgi-bin/\n\
+<Directory \"/var/www/html/cgi-bin\">\n\
+    Options +ExecCGI\n\
+    AddHandler cgi-script .cgi\n\
+    Require all granted\n\
+</Directory>" \
+>> /etc/apache2/sites-enabled/000-default.conf
 # プロジェクトの全ファイルを /var/www 配下へコピー
 COPY . /var/www/html
 
