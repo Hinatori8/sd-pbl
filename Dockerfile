@@ -8,10 +8,10 @@ RUN apt-get update && \
     mkdir -p /var/www/html /var/www/cgi-bin
 
 # プロジェクトの全ファイルを /var/www 配下へコピー
-COPY . /var/www
+COPY . /var/www/html
 
 # 作業ディレクトリを cgi-bin に設定
-WORKDIR /var/www/cgi-bin
+WORKDIR /var/www/html/cgi-bin
 
 # CGI スクリプトに実行権限を付与し、ビルドスクリプトを実行
 RUN chmod +x *.cgi && ./compile_cgis.sh
