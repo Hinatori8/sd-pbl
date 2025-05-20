@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>空き教室検索</title>
+  <style>
+    body {
+      font-family: "Segoe UI", sans-serif;
+      background: #f4f7f9;
+      color: #333;
+      padding: 40px;
+      max-width: 800px;
+      margin: auto;
+    }
+    h1 {
+      text-align: center;
+      color: #2c3e50;
+    }
+    nav {
+      text-align: left;    /* 左寄せ */
+      margin-top: 30px;
+    }
+    nav a {
+      color: #3498db;
+      text-decoration: none;
+      margin-right: 12px;
+      font-weight: bold;
+      font-family: "Segoe UI", sans-serif;
+    }
+    nav a:hover {
+      text-decoration: underline;
+    }
+    label {
+      margin-top: 20px;
+      display: block;
+      font-weight: bold;
+    }
+    select, button {
+      width: 100%;
+      padding: 10px;
+      margin-top: 8px;
+      margin-bottom: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      box-sizing: border-box;
+      font-size: 16px;
+    }
+    button {
+      background-color: #3498db;
+      color: white;
+      border: none;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+    button:hover {
+      background-color: #2980b9;
+    }
+    #result {
+      margin-top: 30px;
+      padding: 20px;
+      background: white;
+      border: 1px solid #ddd;
+      border-radius: 10px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    #result h3 {
+      margin-top: 0;
+      color: #16a085;
+    }
+    ul {
+      padding-left: 20px;
+    }
+    ul li {
+      margin-bottom: 12px;
+      line-height: 1.4;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    ul li a {
+      color: #3498db;
+      text-decoration: none;
+      font-weight: bold;
+      flex: 1;
+    }
+    ul li a:hover {
+      text-decoration: underline;
+    }
+    ul li button.reserve {
+      width: auto;
+      padding: 6px 12px;
+      font-size: 14px;
+      background: #178e72;
+      border: none;
+      border-radius: 4px;
+      color: white;
+      cursor: pointer;
+      margin-left: 8px;
+    }
+    ul li button.reserve:hover {
+      background: #27ae60;
+    }
+  </style>
+</head>
+<body>
+  <h1>空き教室検索</h1>
+
+  <!-- 追加: サーバー時刻表示 -->
+  <div style="text-align:center; margin-bottom:1em;">
+    現在時刻：<span id="serverTime">読み込み中…</span>
+  </div>
+  <script>
+  async function updateServerTime() {
+    try {
+      const res = await fetch('/cgi-bin/server_time.cgi', { cache: 'no-store' });
+      if (!res.ok) throw new Error(res.status);
+      const json = await res.json();
+      document.getElementById('serverTime').textContent = json.time;
+    } catch (e) {
+      document.getElementById('serverTime').textContent = '取得失敗';
+      console.error('server_time.cgi fetch error:', e);
+    }
+  }
+  document.addEventListener('DOMContentLoaded', () => {
+    updateServerTime();
+    // 1秒ごとに更新
+    setInterval(updateServerTime, 1_000);
+  });
+</script>
+
+
+  <label for="day">曜日を選択:</label>
+  <select id="day">
+    <option>月曜日</option>
+    <option>火曜日</option>
+    <option>水曜日</option>
+    <option>木曜日</option>
+    <option>金曜日</option>
+  </select>
+
+  <label for="period">時限を選択:</label>
+  <select id="period">
+    <option>1限</option>
+    <option>2限</option>
+    <option>3限</option>
+    <option>4限</option>
+    <option>5限</option>
+  </select>
+
+  <button onclick="search()">空き教室を検索</button>
+
+  <div id="result"></div>
+
+  <script>
+    const dayMap = { "月曜日": 0, "火曜日": 1, "水曜日": 2, "木曜日": 3, "金曜日": 4 };
+
+    function getRoomInfo(room) {
+      const match = room.match(/^(\d)([0-9A-Z])/);
+      if (!match) return "不明";
+      const building = match[1] + "号館";
+      let floor = match[2];
+      floor = (floor === "B") ? "地下" : floor + "階";
+      return building + " " + floor;
+    }
+
+    async function search() {
+      const dayLabel = document.getElementById("day").value;
+      const periodLabel = document.getElementById("period").value;
+      const resultDiv = document.getElementById("result");
+      if (dayMap[dayLabel] === undefined) {
+        resultDiv.innerHTML = `<h3>申し訳ありません</h3><p>この曜日の検索には対応していません。</p>`;
+        return;
+      }
+      const day = dayMap[dayLabel];
+      const period = parseInt(periodLabel, 10);
+
+      resultDiv.innerHTML = `<p>検索中…</p>`;
+      let res;
+      try {
+        res = await fetch(`/cgi-bin/schedule.cgi?day=${day}&period=${period}`, { cache: "no-store" });
+      } catch (e) {
+        resultDiv.innerHTML = `<h3>エラー</h3><p>サーバーに接続できませんでした。</p>`;
+        return;
+      }
+      if (!res.ok) {
+        resultDiv.innerHTML = `<h3>エラー ${res.status}</h3><p>取得に失敗しました。</p>`;
+        return;
+      }
+
+      const data = await res.json();
+      let html = `<h3>予約可能な教室一覧（${dayLabel} ${periodLabel}）</h3>`;
+      if (!data.rooms || data.rooms.length === 0) {
+        html += `<p>予約可能な教室はありません。</p>`;
+      } else {
+        html += `<ul>`;
+        data.rooms.forEach(roomObj => {
+          const room = roomObj.id;
+          const info = getRoomInfo(room);
+          html += `<li>
+            <a href="room.html?room=${room}">${room}（${info}）</a>
+            <button class="reserve"
+              onclick="reserveRoom('${room}', ${day}, ${period})">
+              予約する
+            </button>
+          </li>`;
+        });
+        html += `</ul>`;
+      }
+      resultDiv.innerHTML = html;
+    }
+
+    async function reserveRoom(room, day, period) {
+      const dayNames = ['月','火','水','木','金'];
+      if (!confirm(`${room} を${dayNames[day]}曜日 ${period}限で予約しますか？`)) return;
+      // 利用人数を入力させる
+      const peopleStr = prompt("何人で利用しますか？", "1");
+      if (peopleStr === null) return;  // キャンセルされたら終了
+      const people = parseInt(peopleStr, 10);
+      if (isNaN(people) || people <= 0) {
+        alert("利用人数を正しい数値で入力してください");
+        return;
+      }      
+      try {
+     // 1) 予約リクエスト
+    const res = await fetch('/cgi-bin/reserve.cgi', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ room, day, period, people })
+    });
+    const result = await res.json();
+    if (!result.success) {
+      alert(`予約に失敗しました: ${result.message}`);
+      return;
+    }
+
+    // 2) 教室情報を取得して定員を取り出し、利用率を計算
+    const roomRes = await fetch(`/cgi-bin/room.cgi?room=${encodeURIComponent(room)}`, { cache: 'no-store' });
+    const roomData = await roomRes.json();
+    const cap = roomData.capacity;
+    const percent = Math.round((people / cap) * 100);
+
+    // 3) 完了メッセージに利用率を含める
+    alert(`予約が完了しました。`);
+
+    // 4) 検索結果を更新
+    search();
+  } catch (e) {
+    alert(`通信エラー: ${e}`);
+  }
+    }
+  </script>
+  <nav>
+    <a href="my_reservations.html">マイ予約一覧</a>
+  </nav>
+</body>
+</html>
