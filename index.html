@@ -261,7 +261,11 @@
     });
     const result = await res.json();
     if (!result.success) {
-      alert(`予約に失敗しました: ${result.message}`);
+      if (j.success) {
+     alert("予約完了");
+  } else {
+    alert("失敗: " + (j.message ?? "原因不明"));
+  }
       return;
     }
 
