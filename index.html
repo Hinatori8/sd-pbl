@@ -117,6 +117,7 @@
 <script>
 (function enforceLogin(){
   const uid = localStorage.getItem('uid');
+
   if(!uid || !/^g\d{7}$/.test(uid)){
     location.replace('login.html');
     return;
@@ -203,7 +204,11 @@
         resultDiv.innerHTML = `<p>検索中…</p>`;
         let res;
         try {
-          res = await fetch(`/cgi-bin/schedule.cgi?day=${day}&period=${period}`, { cache: "no-store" });
+          const uid = localStorage.getItem("uid") || "";
+          res = await fetch(
+             `/cgi-bin/schedule.cgi?day=${day}&period=${period}&uid=${encodeURIComponent(uid)}`,
+             { cache: "no-store" }
+          );
         } catch (e) {
           resultDiv.innerHTML = `<h3>エラー</h3><p>サーバーに接続できませんでした。</p>`;
           return;
