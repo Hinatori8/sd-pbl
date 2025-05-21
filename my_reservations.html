@@ -3,146 +3,107 @@
 <head>
 <meta charset="UTF-8">
 <title>マイ予約一覧</title>
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <style>
-  body{font-family:"Segoe UI",sans-serif;background:#f4f7f9;color:#333;
-       padding:40px;max-width:800px;margin:auto}
-  h1{text-align:center;color:#2c3e50}
-  nav{text-align:left;margin-top:30px}
-  nav a{color:#3498db;text-decoration:none;margin-right:12px;font-weight:bold}
-  nav a:hover{text-decoration:underline}
-  #resList{margin-top:30px;background:#fff;border:1px solid #ddd;border-radius:10px;
-           box-shadow:0 2px 4px rgba(0,0,0,.1);padding:20px}
-  #resList ul{list-style:none;padding:0;margin:0}
-  #resList li{margin-bottom:12px;line-height:1.4}
-  #resList li a{color:#3498db;text-decoration:none;font-weight:bold}
-  #resList li button{margin-left:12px;padding:4px 8px;font-size:14px;
-                     border:1px solid #ccc;border-radius:4px;cursor:pointer}
-  #resList li button:hover{background:#f0f0f0}
+ body{font-family:"Segoe UI",sans-serif;background:#f5f7fa;margin:0}
+ header{display:flex;justify-content:space-between;align-items:center;
+        padding:12px 20px;background:#fff;border-bottom:1px solid #ddd}
+ #resList{max-width:800px;margin:30px auto;background:#fff;padding:20px;
+          border:1px solid #ddd;border-radius:10px;box-shadow:0 2px 4px rgba(0,0,0,.08)}
+ ul{list-style:none;padding:0}
+ li{margin-bottom:14px}
+ button{margin-left:8px;padding:4px 10px;border:1px solid #ccc;border-radius:4px;
+        cursor:pointer}
+ button:hover{background:#f0f0f0}
 </style>
 </head>
 <body>
-  <header style="display:flex;justify-content:space-between;align-items:center;
-               padding:12px 20px;background:#fff;border-bottom:1px solid #ddd;">
+<!-- 共通ヘッダー -->
+<header>
   <h2 style="margin:0;font-size:20px;">教室予約システム</h2>
   <div>
     <span id="loginInfo"></span>
-    <button id="logoutBtn"
-            style="margin-left:12px;padding:4px 10px;border:1px solid #ccc;
-                   border-radius:4px;cursor:pointer">ログアウト</button>
+    <button id="logoutBtn" style="margin-left:12px">ログアウト</button>
   </div>
 </header>
 
+<div id="resList"><p>読み込み中…</p></div>
+
 <script>
-(function enforceLogin(){
+/* ----- ログイン強制 & 表示 ----- */
+(function(){
   const uid = localStorage.getItem('uid');
-  if(!uid || !/^g\d{7}$/.test(uid)){
-    location.replace('login.html');
-    return;
+  if(!uid || !/^g\d{8}$/.test(uid)){
+    location.replace('login.html'); return;
   }
   document.getElementById('loginInfo').textContent = `学籍番号: ${uid}`;
   document.getElementById('logoutBtn').onclick = ()=>{
-    localStorage.removeItem('uid');
-    location.replace('login.html');
+    localStorage.removeItem('uid'); location.replace('login.html');
   };
 })();
-</script>
 
-<h1>マイ予約一覧</h1>
-
-<div style="text-align:center;margin-bottom:1em">
-  現在時刻：<span id="serverTime">読み込み中…</span>
-</div>
-
-<div id="resList"><p>読み込み中…</p></div>
-
-<nav>
-  <a href="index.html">トップへ</a>
-</nav>
-
-<script>
-/* ---------- 共通ユーティリティ ---------- */
-const days = ["月","火","水","木","金","土"];
-function getUid(){
-  return localStorage.getItem("uid") || "";
-}
-
-/* ---------- サーバー時刻の表示 ---------- */
-async function updateServerTime(){
-  try{
-    const res = await fetch('/cgi-bin/server_time.cgi',{cache:'no-store'});
-    const j   = await res.json();
-    document.getElementById('serverTime').textContent = j.time;
-  }catch(e){
-    document.getElementById('serverTime').textContent = '取得失敗';
-  }
-}
-
-/* ---------- マイ予約一覧の読み込み ---------- */
+/* ----- 予約一覧取得 ----- */
 async function loadList(){
-  const uid = getUid();
+  const uid = localStorage.getItem('uid');
+  const res = await fetch('/cgi-bin/my_reservations.cgi',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({user:uid}), cache:'no-store'});
+  const data = await res.json();
   const cont = document.getElementById('resList');
-  if(!uid){
-    cont.innerHTML = '<p>まずトップページでユーザー名を保存してください。</p>';
-    return;
+  cont.innerHTML = '';
+
+  if(!data.reservations || !data.reservations.length){
+    cont.innerHTML = '<p>予約はありません。</p>'; return;
   }
-  cont.innerHTML = '<p>読み込み中…</p>';
-  try{
-    const res = await fetch('/cgi-bin/my_reservations.cgi',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({user:uid}),
-      cache:'no-store'
-    });
-    const data = await res.json();
-    cont.innerHTML = '';
-    if(!data.reservations || data.reservations.length===0){
-      cont.innerHTML = '<p>予約はありません。</p>';
-      return;
-    }
-    const ul = document.createElement('ul');
-    data.reservations.forEach(r=>{
-      const li=document.createElement('li');
-      li.innerHTML=`<a href="room.html?room=${encodeURIComponent(r.room)}">
-                      教室 ${r.room} — ${days[r.day]}曜 ${r.period}限 (${r.people}人)
-                     </a>`;
-      const btn=document.createElement('button');
-      btn.textContent='キャンセル';
-      btn.onclick=()=>cancelResv(r);
-      li.appendChild(btn);
-      ul.appendChild(li);
-    });
-    cont.appendChild(ul);
-  }catch(err){
-    cont.innerHTML = `<p>エラー: ${err.message}</p>`;
-  }
+  const days = ["月","火","水","木","金","土"];
+  const ul = document.createElement('ul');
+  data.reservations.forEach(r=>{
+    const li = document.createElement('li');
+    li.textContent = `教室 ${r.room} — ${days[r.day]}曜 ${r.period}限 (${r.people}人)`;
+
+    const cancel = document.createElement('button');
+    cancel.textContent = 'キャンセル';
+    cancel.onclick = ()=>cancelResv(r);
+
+    const edit   = document.createElement('button');
+    edit.textContent = '人数変更';
+    edit.onclick = ()=>editResv(r);
+
+    li.appendChild(cancel);
+    li.appendChild(edit);
+    ul.appendChild(li);
+  });
+  cont.appendChild(ul);
 }
 
-/* ---------- キャンセル処理 ---------- */
+/* キャンセル */
 async function cancelResv(r){
-  if(!confirm('本当にキャンセルしますか？')) return;
-  const uid = getUid();
-  try{
-    const res = await fetch('/cgi-bin/cancel_reservation.cgi',{
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({ user:uid, room:r.room, day:r.day, period:r.period })
-    });
-    const j = await res.json();
-    if(j.success) loadList();
-    else          alert('キャンセル失敗: '+j.message);
-  }catch(e){
-    alert('通信エラー: '+e.message);
-  }
+  if(!confirm('キャンセルしますか？')) return;
+  const uid = localStorage.getItem('uid');
+  const res = await fetch('/cgi-bin/cancel_reservation.cgi',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({user:uid, room:r.room, day:r.day, period:r.period})
+  });
+  const j = await res.json();
+  if(j.success) loadList(); else alert(j.message);
 }
 
-/* ---------- 初期化 ---------- */
-document.addEventListener('DOMContentLoaded',()=>{
-  updateServerTime();
-  setInterval(updateServerTime,1000);
+/* 人数変更 */
+async function editResv(r){
+  const ppl = parseInt(prompt('新しい人数', r.people),10);
+  if(isNaN(ppl)||ppl<=0) return;
+  const uid = localStorage.getItem('uid');
+  const res = await fetch('/cgi-bin/reserve.cgi',{
+    method:'POST',headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({user:uid, room:r.room, day:r.day,
+                         period:r.period, people:ppl})
+  });
+  const j = await res.json();
+  if(j.success) loadList(); else alert(j.message);
+}
 
-  loadList();
-  setInterval(loadList,60000);   /* 1分ごとに自動更新 */
-});
+document.addEventListener('DOMContentLoaded', loadList);
 </script>
 </body>
 </html>
