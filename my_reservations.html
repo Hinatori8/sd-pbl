@@ -35,7 +35,7 @@
 <script>
 (function enforceLogin(){
   const uid = localStorage.getItem('uid');
-  if(!uid || !/^g\d{8}$/.test(uid)){
+  if(!uid || !/^g\d{7}$/.test(uid)){
     location.replace('login.html');
     return;
   }
