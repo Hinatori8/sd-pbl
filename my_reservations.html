@@ -33,7 +33,7 @@
 /* ----- ログイン強制 & 表示 ----- */
 (function(){
   const uid = localStorage.getItem('uid');
-  if(!uid || !/^g\d{8}$/.test(uid)){
+  if(!uid || !/^g\d{7}$/.test(uid)){
     location.replace('login.html'); return;
   }
   document.getElementById('loginInfo').textContent = `学籍番号: ${uid}`;
