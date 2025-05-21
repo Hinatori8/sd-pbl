@@ -125,32 +125,6 @@
   </style>
 </head>
 <body>
-  <header style="display:flex;justify-content:space-between;align-items:center;
-               padding:12px 20px;background:#fff;border-bottom:1px solid #ddd;">
-  <h2 style="margin:0;font-size:20px;">教室予約システム</h2>
-  <div>
-    <span id="loginInfo"></span>
-    <button id="logoutBtn"
-            style="margin-left:12px;padding:4px 10px;border:1px solid #ccc;
-                   border-radius:4px;cursor:pointer">ログアウト</button>
-  </div>
-</header>
-
-<script>
-(function enforceLogin(){
-  const uid = localStorage.getItem('uid');
-  if(!uid || !/^g\d{8}$/.test(uid)){
-    location.replace('login.html');
-    return;
-  }
-  document.getElementById('loginInfo').textContent = `学籍番号: ${uid}`;
-  document.getElementById('logoutBtn').onclick = ()=>{
-    localStorage.removeItem('uid');
-    location.replace('login.html');
-  };
-})();
-</script>
-
   <h1 id="title">教室詳細</h1>
   <div id="details"></div>
 

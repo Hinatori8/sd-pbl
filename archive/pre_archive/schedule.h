@@ -91,22 +91,11 @@ typedef struct {
     int  reserved_count;
     int  reserved_ppl[PERIOD_MAX][DAY_MAX];
 } RoomState;
-typedef struct {
-    char user[32];
-    char room[16];
-    uint8_t day;     // 0=Mon
-    uint8_t period;  // 1..5
-    uint16_t ppl;    // 人数
-} Reservation;
-#define RESV_MAX  1000
-extern Reservation reservations[RESV_MAX];
-extern int reservation_count;
+extern const char *FeatureNames[FEAT_MAX];
 extern const char *DeskTypeNames[];
 extern const char *ChargeTypeNames[];
 extern const char *SizeTypeNames[];
 extern const int PERIOD_END_MINUTES[PERIOD_MAX];
-void load_reservations(void);
-void save_reservations(void);
 void load_schedule(void);
 void save_schedule(void);
 void reset_schedule_data(void);

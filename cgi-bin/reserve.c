@@ -1,100 +1,116 @@
+/* reserve.c ── 人数加算型の予約 CGI */
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
+#include <ctype.h>
 #include "schedule.h"
 
-// schedule.c 側で実装済み
-void load_schedule(void);
-void save_schedule(void);
-void auto_free_passed_periods(void);
-extern Room rooms[];
-extern const int room_count;
+/* reservation.c で定義した変数／関数 */
+extern Reservation reservations[];
+extern int  reservation_count;
+void load_reservations(void);
+void save_reservations(void);
 
-// JSON レスポンスを生成
-static void respond(int ok, const char *msg) {
-    printf("Content-Type: application/json; charset=UTF-8\r\n\r\n");
-    if (ok) {
-        printf("{\"success\":true}");
-    } else {
-        printf("{\"success\":false,\"message\":\"%s\"}", msg);
-    }
+static int valid_uid(const char *s)
+{
+    /* g + 8 桁数字のみ許可 */
+    if (!s || s[0] != 'g') return 0;
+    for (int i = 1; i < 9; ++i)
+        if (!isdigit((unsigned char)s[i])) return 0;
+    return s[9] == '\0';   /* ちょうど 9 文字で終端 */
 }
 
-int main(void) {
-    // 1) Content-Length の取得
-    const char *cl_env = getenv("CONTENT_LENGTH");
-    if (!cl_env) {
-        respond(0, "Content-Length がありません");
-        return 0;
-    }
-    int content_length = atoi(cl_env);
-    if (content_length <= 0) {
-        respond(0, "Content-Length が不正です");
-        return 0;
-    }
+/* JSON レスポンス */
+static void respond(int ok, const char *msg)
+{
+    printf("Content-Type: application/json; charset=UTF-8\r\n\r\n");
+    if (ok) printf("{\"success\":true}");
+    else    printf("{\"success\":false,\"message\":\"%s\"}", msg ? msg : "");
+}
 
-    // 2) リクエストボディの読み込み
-    char *body = malloc(content_length + 1);
-    if (!body) {
-        respond(0, "メモリ確保エラー");
-        return 0;
-    }
-    size_t nread = fread(body, 1, content_length, stdin);
-    if (nread != (size_t)content_length) {
-        free(body);
-        respond(0, "リクエスト読み込みエラー");
-        return 0;
-    }
-    body[content_length] = '\0';
+int main(void)
+{
+    /*── 1) リクエスト読み込み ──────────────────*/
+    const char *cl = getenv("CONTENT_LENGTH");
+    if (!cl) { respond(0, "No Content-Length"); return 0; }
 
-    // 3) JSON の簡易パース
-    char room_id[32];
+    int len = atoi(cl);
+    char *body = malloc(len + 1);
+    if (!body) { respond(0, "malloc failed"); return 0; }
+    if (fread(body, 1, len, stdin) != (size_t)len) {
+        free(body); respond(0, "read error"); return 0;
+    }
+    body[len] = '\0';
+
+    /*── 2) JSON パース (超簡易 sscanf) ───────────*/
+    char user[32], room_id[32];
     int day, period, people;
     if (sscanf(body,
-        "{\"room\":\"%31[^\"]\",\"day\":%d,\"period\":%d,\"people\":%d}",
-        room_id, &day, &period, &people) != 4) {
-        free(body);
-        respond(0, "Invalid JSON");
-        return 0;
+        "{\"user\":\"%31[^\"]\",\"room\":\"%31[^\"]\","
+        "\"day\":%d,\"period\":%d,\"people\":%d}",
+        user, room_id, &day, &period, &people) != 5) {
+        free(body); respond(0, "Invalid JSON"); return 0;
     }
     free(body);
-
-    // 4) 既存予約データの読み込み
-    load_schedule();
-    auto_free_passed_periods();
-
-    // 5) 予約処理
-    for (int i = 0; i < room_count; ++i) {
-        if (strcmp(rooms[i].id, room_id) == 0) {
-            // 範囲チェック
-            if (day < 0 || day >= DAY_MAX || period < 1 || period > PERIOD_MAX) {
-                respond(0, "Out of range");
-                return 0;
-            }
-
-            // まず「静的ブロックされている時間」かを判定
-            if (rooms[i].initial_used[period-1][day]) {
-                respond(0, "この時間は予約できません");
-                return 0;
-            }
-
-            // 続いて既に予約済みかどうか
-            if (rooms[i].used[period-1][day]) {
-                respond(0, "既に予約済みです");
-                return 0;
-            }
-
-            // 予約をマーク & 人数を記録
-            rooms[i].used[period-1][day] = true;
-            rooms[i].reserved_ppl[period-1][day] = people;
-            rooms[i].reserved_count += 1;
-            save_schedule();
-            respond(1, NULL);
-            return 0;
-        }
+    /* 学籍番号フォーマットチェック */
+    if (!valid_uid(user)){
+        respond(0,"uid format error"); return 0;
     }
+    if (people <= 0) { respond(0, "people must be >0"); return 0; }
+    /*── 3) データロード & 自動解放 ───────────────*/
+    load_schedule();
+    load_reservations();
+    auto_free_passed_periods();   /* 終了済みコマをリセット */
 
-    // 教室が見つからない場合
+    /*── 4) 予約ロジック ───────────────────────*/
+    for (int i = 0; i < room_count; ++i) {
+        if (strcmp(rooms[i].id, room_id) != 0) continue;
+
+        /* 範囲 & 講義ブロック判定 */
+        if (day < 0 || day >= DAY_MAX || period < 1 || period > PERIOD_MAX) {
+            respond(0, "Out of range"); return 0;
+        }
+        int p = period - 1;
+        if (rooms[i].initial_used[p][day]) {
+            respond(0, "講義で使用中です"); return 0;
+        }
+
+        /* 同一ユーザーの重複チェック */
+        for (int k = 0; k < reservation_count; ++k) {
+            Reservation *r = &reservations[k];
+            if (!strcmp(r->user, user) && !strcmp(r->room, room_id)
+                && r->day == day && r->period == period) {
+                respond(0, "同一ユーザーが既に予約しています"); return 0;
+            }
+        }
+
+        /* 定員チェック */
+        int after = rooms[i].reserved_ppl[p][day] + people;
+        if (after > rooms[i].capacity) {
+            respond(0, "定員オーバー"); return 0;
+        }
+
+        /* 追加予約を反映 */
+        rooms[i].used[p][day] = true;
+        rooms[i].reserved_ppl[p][day] = after;
+        rooms[i].reserved_count++;
+
+        Reservation nr = {0};
+        strncpy(nr.user,  user,  sizeof(nr.user)  - 1);
+        strncpy(nr.room,  room_id, sizeof(nr.room) - 1);
+        nr.day    = day;
+        nr.period = period;
+        nr.ppl    = people;
+        reservations[reservation_count++] = nr;
+
+        /* 永続化 */
+        save_schedule();
+        save_reservations();
+
+        respond(1, NULL);
+        return 0;
+    }
     respond(0, "Room not found");
     return 0;
 }
