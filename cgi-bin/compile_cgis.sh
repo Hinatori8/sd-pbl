@@ -5,7 +5,6 @@ CFLAGS="-std=c11 -O2 -Wall"
 
 echo "== Building CGI programs =="
 
-# ---------- 予約関連 ----------
 echo "[1/6] reserve.cgi"
 gcc $CFLAGS -o reserve.cgi \
     reserve.c reservation.c schedule.c -lm
@@ -18,11 +17,9 @@ echo "[3/6] my_reservations.cgi"
 gcc $CFLAGS -o my_reservations.cgi \
     my_reservations.c reservation.c schedule.c -lm
 
-
-# ---------- 既存 CGI ----------
 echo "[4/6] schedule.cgi"
 gcc $CFLAGS -o schedule.cgi \
-    schedule_src.c schedule.c -lm
+    schedule_src.c reservation.c schedule.c -lm
 
 echo "[5/6] room.cgi"
 gcc $CFLAGS -o room.cgi \
@@ -32,4 +29,4 @@ echo "[6/6] schedule_version.cgi"
 gcc $CFLAGS -o schedule_version.cgi \
     schedule_version.c schedule.c -lm
 
-echo "✅ すべての CGI をビルドしました！"
+echo "✅ All CGI built successfully!"
