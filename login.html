@@ -19,8 +19,8 @@
 <body>
 <div class="card">
   <h1>ログイン</h1>
-  <p>学籍番号（先頭 g + 8 桁）を入力してください</p>
-  <input id="uid" placeholder="g12345678" maxlength="9" autofocus>
+  <p>学籍番号（先頭 g + 7 桁）を入力してください</p>
+  <input id="uid" placeholder="g1234567" maxlength="9" autofocus>
   <div id="err" class="error"></div>
   <button id="loginBtn">ログイン</button>
 </div>
@@ -28,7 +28,7 @@
 <script>
 document.getElementById('loginBtn').onclick = () => {
   const uid = document.getElementById('uid').value.trim();
-  if(!/^g\d{8}$/.test(uid)){
+  if(!/^g\d{7}$/.test(uid)){
     document.getElementById('err').textContent = '形式が正しくありません';
     return;
   }

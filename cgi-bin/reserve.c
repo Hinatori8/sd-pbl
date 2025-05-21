@@ -14,11 +14,11 @@ void save_reservations(void);
 
 static int valid_uid(const char *s)
 {
-    /* g + 8 桁数字のみ許可 */
+    /* g + 7 桁数字のみ許可 */
     if (!s || s[0] != 'g') return 0;
-    for (int i = 1; i < 9; ++i)
+    for (int i = 1; i < 8; ++i)
         if (!isdigit((unsigned char)s[i])) return 0;
-    return s[9] == '\0';   /* ちょうど 9 文字で終端 */
+    return s[8] == '\0';   /* ちょうど 8 文字で終端 */
 }
 
 /* JSON レスポンス */
