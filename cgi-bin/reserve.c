@@ -49,7 +49,7 @@ int main(void)
 
     /* 予約処理 */
     for (int i = 0; i < room_count; ++i) {
-        if (strcmp(rooms[i].id, room_id)) continue;
+        if (strcmp(rooms[i].id, room_id) != 0) continue;
         int p = period - 1;
 
         /* 上書き or 新規の判定 */
