@@ -10,7 +10,10 @@ static void print_available_json(Day d, int period) {
     fputs("{\"rooms\":[", stdout);
     for (int i = 0, first = 1; i < room_count; ++i) {
         // used[時限][曜日] の順で参照す
-        bool occupied = rooms[i].initial_used[period-1][d] || rooms[i].used[period-1][d];
+        int p = period - 1;
+        /* 初期専有 or 定員いっぱいのみ除外する */
+        bool full = rooms[i].reserved_ppl[p][d] >= rooms[i].capacity;
+        bool occupied = rooms[i].initial_used[p][d] || full;
         if (!occupied) {
             if (!first) putchar(',');
             /* オブジェクト開始 */
@@ -32,6 +35,9 @@ static void print_available_json(Day d, int period) {
             printf(",\"charge\":\"%s\"",  ChargeTypeNames[rooms[i].charge]);
             printf(",\"wired_mic\":%d",   rooms[i].wired_mic);
             printf(",\"wireless_mic\":%d", rooms[i].wireless_mic);
+            /* 残席 */
+            int remain = rooms[i].capacity - rooms[i].reserved_ppl[p][d];
+            printf(",\"remain\":%d", remain);
             /* オブジェクト終端 */
             putchar('}');
             first = 0;
