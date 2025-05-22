@@ -256,7 +256,13 @@
       const res = await fetch("/cgi-bin/reserve.cgi", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user: uid, room, day, period, people })
+        body: JSON.stringify({ 
+          user: uid,
+          room,
+          day: Number(day),
+          period: Number(period),
+          people
+        })
       });
       if (!res.ok) throw new Error(`HTTP ${res.status}`);
       const result = await res.json();
