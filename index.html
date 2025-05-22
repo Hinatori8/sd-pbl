@@ -253,37 +253,26 @@
         return;
       }      
       try {
-     // 1) 予約リクエスト
-    const res = await fetch('/cgi-bin/reserve.cgi', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ user: uid, room, day, period, people })
-    });
-    const result = await res.json();
-    if (!result.success) {
-      if (j.success) {
-     alert("予約完了");
-  } else {
-    alert("失敗: " + (j.message ?? "原因不明"));
-  }
-      return;
-    }
+        /* 1) 予約リクエスト */
+        const res = await fetch('/cgi-bin/reserve.cgi', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ user: uid, room, day, period, people })
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const result = await res.json();
 
-    // 2) 教室情報を取得して定員を取り出し、利用率を計算
-    const roomRes = await fetch(`/cgi-bin/room.cgi?room=${encodeURIComponent(room)}`, { cache: 'no-store' });
-    const roomData = await roomRes.json();
-    const cap = roomData.capacity;
-    const percent = Math.round((people / cap) * 100);
-
-    // 3) 完了メッセージに利用率を含める
-    alert(`予約が完了しました。`);
-
-    // 4) 検索結果を更新
-    search();
-  } catch (e) {
-    alert(`通信エラー: ${e}`);
-  }
-    }
+        /* 2) 成否メッセージ */
+        if (result.success) {
+          alert('予約完了');
+          search();                 // 検索結果を再表示
+        } else {
+          alert('失敗: ' + (result.message ?? '原因不明'));
+        }
+      } catch (e) {
+        alert('通信エラー: ' + e);
+      }
+     }
   </script>
   <nav>
     <a href="my_reservations.html">マイ予約一覧</a>
