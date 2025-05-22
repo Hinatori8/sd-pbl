@@ -15,6 +15,16 @@
  button{margin-left:8px;padding:4px 10px;border:1px solid #ccc;border-radius:4px;
         cursor:pointer}
  button:hover{background:#f0f0f0}
+ /* 教室リンク */
+li a {
+  color: #3498db;
+  font-weight: bold;
+  text-decoration: none;
+}
+li a:hover {
+  text-decoration: underline;
+}
+
 </style>
 </head>
 <body>
@@ -60,8 +70,17 @@ async function loadList(){
   const ul = document.createElement('ul');
   data.reservations.forEach(r=>{
     const li = document.createElement('li');
-    li.textContent = `教室 ${r.room} — ${days[r.day]}曜 ${r.period}限 (${r.people}人)`;
 
+    /* --- 教室リンク生成 --- */
+    const link = document.createElement('a');
+    link.href = `room.html?room=${encodeURIComponent(r.room)}`;
+    link.textContent = `教室 ${r.room}`;
+    li.appendChild(link);
+
+    /* --- 残りのテキスト（曜日・時限・人数） --- */
+    li.append(` — ${days[r.day]}曜 ${r.period}限 (${r.people}人)`);
+
+    /* --- 既存ボタン --- */
     const cancel = document.createElement('button');
     cancel.textContent = 'キャンセル';
     cancel.onclick = ()=>cancelResv(r);
