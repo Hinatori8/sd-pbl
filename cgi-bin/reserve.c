@@ -21,9 +21,9 @@ static void respond(int ok, const char *msg)
 static int valid_uid(const char *s)
 {
     if (!s || s[0] != 'g') return 0;
-    for (int i = 1; i < 9; ++i)
+    for (int i = 1; i < 8; ++i)
         if (!isdigit((unsigned char)s[i])) return 0;
-    return s[9] == '\0';
+    return s[8] == '\0';
 }
 
 int main(void)
