@@ -181,98 +181,98 @@
   <script>
     const dayMap = { "月曜日": 0, "火曜日": 1, "水曜日": 2, "木曜日": 3, "金曜日": 4 };
 
-      function getRoomInfo(room) {
-        const match = room.match(/^(\d)([0-9A-Z])/);
-        if (!match) return "不明";
-        const building = match[1] + "号館";
-        let floor = match[2];
-        floor = (floor === "B") ? "地下" : floor + "階";
-        return building + " " + floor;
+    function getRoomInfo(room) {
+      const match = room.match(/^(\d)([0-9A-Z])/);
+      if (!match) return "不明";
+      const building = match[1] + "号館";
+      let floor = match[2];
+      floor = (floor === "B") ? "地下" : floor + "階";
+      return building + " " + floor;
+    }
+
+    async function search() {
+      const dayLabel = document.getElementById("day").value;
+      const periodLabel = document.getElementById("period").value;
+      const resultDiv = document.getElementById("result");
+      if (dayMap[dayLabel] === undefined) {
+        resultDiv.innerHTML = `<h3>申し訳ありません</h3><p>この曜日の検索には対応していません。</p>`;
+        return;
       }
+      const day = dayMap[dayLabel];
+      const period = parseInt(periodLabel, 10);
 
-      async function search() {
-        const dayLabel = document.getElementById("day").value;
-        const periodLabel = document.getElementById("period").value;
-        const resultDiv = document.getElementById("result");
-        if (dayMap[dayLabel] === undefined) {
-          resultDiv.innerHTML = `<h3>申し訳ありません</h3><p>この曜日の検索には対応していません。</p>`;
-          return;
-        }
-        const day = dayMap[dayLabel];
-        const period = parseInt(periodLabel, 10);
-
-        resultDiv.innerHTML = `<p>検索中…</p>`;
-        let res;
-        try {
-          const uid = localStorage.getItem("uid") || "";
-          res = await fetch(
+      resultDiv.innerHTML = `<p>検索中…</p>`;
+      let res;
+      try {
+        const uid = localStorage.getItem("uid") || "";
+        res = await fetch(
              `/cgi-bin/schedule.cgi?day=${day}&period=${period}&uid=${encodeURIComponent(uid)}`,
              { cache: "no-store" }
-          );
-        } catch (e) {
-          resultDiv.innerHTML = `<h3>エラー</h3><p>サーバーに接続できませんでした。</p>`;
-          return;
-        }
-        if (!res.ok) {
-          resultDiv.innerHTML = `<h3>エラー ${res.status}</h3><p>取得に失敗しました。</p>`;
-          return;
-        }
+        );
+      } catch (e) {
+        resultDiv.innerHTML = `<h3>エラー</h3><p>サーバーに接続できませんでした。</p>`;
+        return;
+      }
+      if (!res.ok) {
+        resultDiv.innerHTML = `<h3>エラー ${res.status}</h3><p>取得に失敗しました。</p>`;
+        return;
+      }
 
-        const data = await res.json();
-        let html = `<h3>予約可能な教室一覧（${dayLabel} ${periodLabel}）</h3>`;
-        if (!data.rooms || data.rooms.length === 0) {
+      const data = await res.json();
+      let html = `<h3>予約可能な教室一覧（${dayLabel} ${periodLabel}）</h3>`;
+      if (!data.rooms || data.rooms.length === 0) {
           html += `<p>予約可能な教室はありません。</p>`;
-        } else {
-          html += `<ul>`;
-          data.rooms.forEach(roomObj => {
-            const room = roomObj.id;
-            const info = getRoomInfo(room);
-            html += `<li>
+      } else {
+        html += `<ul>`;
+        data.rooms.forEach(roomObj => {
+          const room = roomObj.id;
+          const info = getRoomInfo(room);
+          html += `<li>
               <a href="room.html?room=${room}">${room}（${info}）</a>
               <button class="reserve"
                 onclick="reserveRoom('${room}', ${day}, ${period})">
                 予約する
               </button>
             </li>`;
-          });
-          html += `</ul>`;
-        }
-        resultDiv.innerHTML = html;
-      }
-
-      async function reserveRoom(room, day, period) {
-      const uid = localStorage.getItem("uid"); 
-      const dayNames = ['月','火','水','木','金'];
-      if (!confirm(`${room} を${dayNames[day]}曜日 ${period}限で予約しますか？`)) return;
-      // 利用人数を入力させる
-      const peopleStr = prompt("何人で利用しますか？", "1");
-      if (peopleStr === null) return;  // キャンセルされたら終了
-      const people = parseInt(peopleStr, 10);
-      if (isNaN(people) || people <= 0) {
-        alert("利用人数を正しい数値で入力してください");
-        return;
-      }      
-      try {
-        /* 1) 予約リクエスト */
-        const res = await fetch('/cgi-bin/reserve.cgi', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user: uid, room, day, period, people })
         });
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        const result = await res.json();
-
-        /* 2) 成否メッセージ */
-        if (result.success) {
-          alert('予約完了');
-          search();                 // 検索結果を再表示
-        } else {
-          alert('失敗: ' + (result.message ?? '原因不明'));
-        }
-      } catch (e) {
-        alert('通信エラー: ' + e);
+        html += `</ul>`;
       }
-     }
+      resultDiv.innerHTML = html;
+    }
+
+    async function reserveRoom(room, day, period) {
+    const uid = localStorage.getItem("uid");
+    const dayNames = ["月","火","水","木","金"];
+    if (!confirm(`${room} を${dayNames[day]}曜日 ${period}限で予約しますか？`)) return;
+
+    const people = parseInt(prompt("何人で利用しますか？", "1"), 10);
+    if (isNaN(people) || people <= 0) {
+      alert("利用人数を正しい数値で入力してください");
+      return;
+    }
+
+    try {
+      /* --- 予約リクエスト --- */
+      const res = await fetch("/cgi-bin/reserve.cgi", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ user: uid, room, day, period, people })
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      const result = await res.json();
+
+      /* --- メッセージ表示 --- */
+      if (result.success) {
+        alert("予約完了");
+        search();                  // 検索結果を更新
+      } else {
+        alert("失敗: " + (result.message ?? "原因不明"));
+      }
+    } catch (e) {
+      alert("通信エラー: " + e);
+    }
+  }
+
   </script>
   <nav>
     <a href="my_reservations.html">マイ予約一覧</a>
