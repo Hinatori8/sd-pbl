@@ -1,29 +1,31 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>ログイン - 教室予約</title>
-<style>
- body{font-family:"Segoe UI",sans-serif;background:#f0f4f7;display:flex;
-      justify-content:center;align-items:center;height:100vh;margin:0}
- .card{background:#fff;border:1px solid #ddd;padding:40px 60px;border-radius:12px;
-       box-shadow:0 4px 12px rgba(0,0,0,.08);text-align:center}
- input{padding:8px 12px;font-size:18px;border:1px solid #ccc;border-radius:6px;
-       width:200px}
- button{margin-top:20px;padding:10px 24px;font-size:18px;border:none;
-        border-radius:6px;background:#2d98da;color:#fff;cursor:pointer}
- button:hover{background:#257ac1}
- .error{color:#e74c3c;margin-top:8px}
-</style>
+  <meta charset="UTF-8">
+  <title>ログイン - 教室予約</title>
+  <style>
+    body{font-family:"Segoe UI",sans-serif;background:#f0f4f7;display:flex;justify-content:center;align-items:center;height:100vh;margin:0}
+    .card{background:#fff;border:1px solid #ddd;padding:40px 60px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.08);text-align:center}
+    input{padding:8px 12px;font-size:18px;border:1px solid #ccc;border-radius:6px;width:200px;margin-top:8px}
+    button{margin-top:20px;padding:10px 24px;font-size:18px;border:none;border-radius:6px;background:#2d98da;color:#fff;cursor:pointer}
+    button:hover{background:#257ac1}
+    .seed{font-size:20px;letter-spacing:4px;font-weight:600;margin:4px 0 10px;color:#2d98da}
+    .note{font-size:14px;color:#555;margin-bottom:4px}
+    .error{color:#e74c3c;margin-top:8px}
+  </style>
 </head>
 <body>
-<div class="card">
-  <h1>ログイン</h1>
-  <p>学籍番号（先頭 g + 7 桁）を入力してください</p>
-  <input id="uid" placeholder="g1234567" maxlength="9" autofocus>
-  <div id="err" class="error"></div>
-  <button id="loginBtn">ログイン</button>
-</div>
+  <div class="card">
+    <h1>ログイン</h1>
+    <p>学籍番号（g + 7 桁）とパスワード（4 桁）を入力してください</p>
+    <div class="note">初回のみ、以下に表示された 4 桁の数字をパスワードとして入力してください。</div>
+    <div id="seed" class="seed"></div>
+
+    <input id="uid" placeholder="g1234567" maxlength="9" autofocus>
+    <input id="pwd" placeholder="パスワード" maxlength="4" type="password">
+    <div id="err" class="error"></div>
+    <button id="loginBtn">ログイン</button>
+  </div>
 
 <script>
   // ---- 1. 乱数生成と表示 -------------------------------------------
