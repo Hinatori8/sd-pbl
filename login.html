@@ -6,7 +6,7 @@
   <style>
     body{font-family:"Segoe UI",sans-serif;background:#f0f4f7;display:flex;justify-content:center;align-items:center;height:100vh;margin:0}
     .card{background:#fff;border:1px solid #ddd;padding:40px 60px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.08);text-align:center}
-    input{padding:8px 12px;font-size:18px;border:1px solid #ccc;border-radius:6px;width:200px;margin-top:8px}
+    input{display:block;margin:8px auto 0 auto;padding:8px 12px;font-size:18px;border:1px solid #ccc;border-radius:6px;width:200px;box-sizing:border-box}
     button{margin-top:20px;padding:10px 24px;font-size:18px;border:none;border-radius:6px;background:#2d98da;color:#fff;cursor:pointer}
     button:hover{background:#257ac1}
     .seed{font-size:20px;letter-spacing:4px;font-weight:600;margin:4px 0 10px;color:#2d98da}
@@ -44,8 +44,8 @@
     localStorage.setItem('users', JSON.stringify(obj));
   }
 
-  // ---- 3. ログイン処理 ----------------------------------------------
-  document.getElementById('loginBtn').onclick = () => {
+  // ---- 3. ログイン関数 ----------------------------------------------
+  function doLogin(){
     const uid = document.getElementById('uid').value.trim();
     const pwd = document.getElementById('pwd').value.trim();
     const err = document.getElementById('err');
@@ -81,7 +81,15 @@
     // 認証 OK
     localStorage.setItem('uid', uid);
     location.href = 'index.html';
-  };
+  }
+
+  // ---- 4. ボタンおよび Enter キー -----------------------------------
+  document.getElementById('loginBtn').onclick = doLogin;
+  ['uid','pwd'].forEach(id=>{
+    document.getElementById(id).addEventListener('keydown', e=>{
+      if(e.key === 'Enter') doLogin();
+    });
+  });
 </script>
 </body>
 </html>
