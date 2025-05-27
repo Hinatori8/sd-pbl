@@ -26,15 +26,60 @@
 </div>
 
 <script>
-document.getElementById('loginBtn').onclick = () => {
-  const uid = document.getElementById('uid').value.trim();
-  if(!/^g\d{7}$/.test(uid)){
-    document.getElementById('err').textContent = '形式が正しくありません';
-    return;
+  // ---- 1. 乱数生成と表示 -------------------------------------------
+  const seed = Math.floor(1000 + Math.random() * 9000).toString(); // 1000–9999 の 4 桁
+  document.getElementById('seed').textContent = seed;
+
+  // ---- 2. ユーザー情報の読み書きユーティリティ -----------------------
+  function getUsers(){
+    try {
+      return JSON.parse(localStorage.getItem('users') || '{}');
+    } catch(_) {
+      return {};
+    }
   }
-  localStorage.setItem('uid', uid);
-  location.href = 'index.html';
-};
+  function setUsers(obj){
+    localStorage.setItem('users', JSON.stringify(obj));
+  }
+
+  // ---- 3. ログイン処理 ----------------------------------------------
+  document.getElementById('loginBtn').onclick = () => {
+    const uid = document.getElementById('uid').value.trim();
+    const pwd = document.getElementById('pwd').value.trim();
+    const err = document.getElementById('err');
+    err.textContent = '';
+
+    if(!/^g\d{7}$/.test(uid)){
+      err.textContent = '学籍番号の形式が正しくありません';
+      return;
+    }
+    if(!/^\d{4}$/.test(pwd)){
+      err.textContent = 'パスワードは 4 桁の数字で入力してください';
+      return;
+    }
+
+    const users = getUsers();
+
+    if(!(uid in users)){
+      // 初回ログイン
+      if(pwd !== seed){
+        err.textContent = '初回は上記の 4 桁の数字をパスワードとして入力してください';
+        return;
+      }
+      users[uid] = pwd;      // 初回パスワードを保存
+      setUsers(users);
+    } else {
+      // 2 回目以降
+      if(users[uid] !== pwd){
+        err.textContent = 'パスワードが正しくありません';
+        return;
+      }
+    }
+
+    // 認証 OK
+    localStorage.setItem('uid', uid);
+    location.href = 'index.html';
+  };
 </script>
 </body>
 </html>
