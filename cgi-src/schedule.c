@@ -2,6 +2,7 @@
 #define _POSIX_C_SOURCE 200809L
 #include<stdio.h>
 #include<string.h>
+#include <unistd.h>
 #include<time.h>
 
 // 各時限の終了時刻（分）。0:00 からの経過分で表す。
