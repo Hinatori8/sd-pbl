@@ -1,8 +1,10 @@
 // reservation.c  ―― Reservation 配列の永続化
 #include "schedule.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include <sys/file.h>
+#include <unistd.h>
 
 Reservation reservations[RESV_MAX];
 int reservation_count = 0;
