@@ -63,8 +63,8 @@ Room rooms[ROOM_MAX] = {
       .mic_input     = 0,
       .img_count = 2,
       .img_paths = {
-        "/images/rooms/3B14/class.jpg",
-        "/images/rooms/3B14/class2.jpeg"
+        "/images/rooms/1BA/class.jpg",
+        "/images/rooms/1BA/class2.jpeg"
       },
     },
     {
