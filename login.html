@@ -1,59 +1,95 @@
-<!DOCTYPE html><html lang="ja"><head>
-<meta charset="UTF-8"><title>ログイン - 教室予約</title>
-<style>
-  body{font-family:"Segoe UI",sans-serif;background:#f0f4f7;display:flex;justify-content:center;align-items:center;height:100vh;margin:0}
-  .card{background:#fff;border:1px solid #ddd;padding:40px 60px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.08);text-align:center}
-  input,button{font-size:18px;border-radius:6px}
-  input{display:block;margin:8px auto 0;width:200px;padding:8px 12px;border:1px solid #ccc;box-sizing:border-box}
-  button{margin-top:20px;padding:10px 24px;border:none;background:#2d98da;color:#fff;cursor:pointer}
-  button:hover{background:#257ac1}
-  .seed{font-size:20px;letter-spacing:4px;font-weight:600;margin:4px 0 10px;color:#2d98da}
-  .note{font-size:14px;color:#555;margin-bottom:4px}.error{color:#e74c3c;margin-top:8px}
-</style></head><body>
-<div class="card">
-  <h1>ログイン</h1>
-  <p>学籍番号（g+7桁）とパスワード（4桁）を入力してください</p>
-  <div class="note">初回のみ、下の 4 桁をパスワードとして使用します</div>
-  <div id="seed" class="seed"></div>
-  <input id="uid" placeholder="g1234567" maxlength="9" autofocus>
-  <input id="pwd" placeholder="パスワード" maxlength="4" type="password">
-  <div id="err" class="error"></div>
-  <button id="loginBtn">ログイン</button>
-</div>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>ログイン - 教室予約</title>
+  <style>
+    body{font-family:"Segoe UI",sans-serif;background:#f0f4f7;display:flex;justify-content:center;align-items:center;height:100vh;margin:0}
+    .card{background:#fff;border:1px solid #ddd;padding:40px 60px;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,.08);text-align:center}
+    input{display:block;margin:8px auto 0 auto;padding:8px 12px;font-size:18px;border:1px solid #ccc;border-radius:6px;width:200px;box-sizing:border-box}
+    button{margin-top:20px;padding:10px 24px;font-size:18px;border:none;border-radius:6px;background:#2d98da;color:#fff;cursor:pointer}
+    button:hover{background:#257ac1}
+    .seed{font-size:20px;letter-spacing:4px;font-weight:600;margin:4px 0 10px;color:#2d98da}
+    .note{font-size:14px;color:#555;margin-bottom:4px}
+    .error{color:#e74c3c;margin-top:8px}
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>ログイン</h1>
+    <p>学籍番号（g + 7 桁）とパスワード（4 桁）を入力してください</p>
+    <div class="note">初回のみ、以下に表示された 4 桁の数字をパスワードとして入力してください。</div>
+    <div id="seed" class="seed"></div>
 
-<script type="module">
-/* ★1) seed を取得して seedTxt に保持 */
-const seedTxt = await fetch('/cgi-bin/seed.cgi').then(r => r.text());
-document.getElementById('seed').textContent = seedTxt.trim();
+    <input id="uid" placeholder="g1234567" maxlength="9" autofocus>
+    <input id="pwd" placeholder="パスワード" maxlength="4" type="password">
+    <div id="err" class="error"></div>
+    <button id="loginBtn">ログイン</button>
+  </div>
 
-async function doLogin(){
-  const uid = uidI.value.trim();
-  const pwd = pwdI.value.trim();
-  errT.textContent = '';
+<script>
+  // ---- 1. 乱数生成と表示 -------------------------------------------
+  const seed = Math.floor(1000 + Math.random() * 9000).toString(); // 1000–9999 の 4 桁
+  document.getElementById('seed').textContent = seed;
 
-  if(!/^g\d{7}$/.test(uid)){errT.textContent='学籍番号が不正';return;}
-  if(!/^\d{4}$/.test(pwd)){errT.textContent='パスワードは4桁';return;}
+  // ---- 2. ユーザー情報の読み書きユーティリティ -----------------------
+  function getUsers(){
+    try {
+      return JSON.parse(localStorage.getItem('users') || '{}');
+    } catch(_) {
+      return {};
+    }
+  }
+  function setUsers(obj){
+    localStorage.setItem('users', JSON.stringify(obj));
+  }
 
-  const res  = await fetch('/cgi-bin/auth.cgi',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({uid,pwd,seed:seedTxt})
+  // ---- 3. ログイン関数 ----------------------------------------------
+  function doLogin(){
+    const uid = document.getElementById('uid').value.trim();
+    const pwd = document.getElementById('pwd').value.trim();
+    const err = document.getElementById('err');
+    err.textContent = '';
+
+    if(!/^g\d{7}$/.test(uid)){
+      err.textContent = '学籍番号の形式が正しくありません';
+      return;
+    }
+    if(!/^\d{4}$/.test(pwd)){
+      err.textContent = 'パスワードは 4 桁の数字で入力してください';
+      return;
+    }
+
+    const users = getUsers();
+
+    if(!(uid in users)){
+      // 初回ログイン
+      if(pwd !== seed){
+        err.textContent = '初回は上記の 4 桁の数字をパスワードとして入力してください';
+        return;
+      }
+      users[uid] = pwd;      // 初回パスワードを保存
+      setUsers(users);
+    } else {
+      // 2 回目以降
+      if(users[uid] !== pwd){
+        err.textContent = 'パスワードが正しくありません';
+        return;
+      }
+    }
+
+    // 認証 OK
+    localStorage.setItem('uid', uid);
+    location.href = 'index.html';
+  }
+
+  // ---- 4. ボタンおよび Enter キー -----------------------------------
+  document.getElementById('loginBtn').onclick = doLogin;
+  ['uid','pwd'].forEach(id=>{
+    document.getElementById(id).addEventListener('keydown', e=>{
+      if(e.key === 'Enter') doLogin();
+    });
   });
-  const json = await res.json();
-  if(!json.success){errT.textContent=json.msg||'ログイン失敗';return;}
-
-  /* ここを追加――他ページが参照するため uid を保存 */
-  localStorage.setItem('uid', uid);
-
-  location.href='index.html';
-}
-
-/* 3) UI イベント */
-const uidI=document.getElementById('uid');
-const pwdI=document.getElementById('pwd');
-const errT=document.getElementById('err');
-loginBtn.onclick = doLogin;
-[uidI,pwdI].forEach(el=>el.addEventListener('keydown',e=>{
-  if(e.key==='Enter') doLogin();
-}));
-</script></body></html>
+</script>
+</body>
+</html>
