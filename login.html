@@ -22,6 +22,7 @@
 </div>
 
 <script type="module">
+/* ★1) seed を取得して seedTxt に保持 */
 const seedTxt = await fetch('/cgi-bin/seed.cgi').then(r => r.text());
 document.getElementById('seed').textContent = seedTxt.trim();
 
