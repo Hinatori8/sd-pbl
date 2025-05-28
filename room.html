@@ -113,6 +113,11 @@
       background-color: #ccc;
       color: #333;
     }
+    header h2 a,
+    header h2 a:visited {      /* クリック後も色を保持 */
+    color: #333;             /* 完全な黒なら #000 に */
+    text-decoration: none;
+    }
     /* 利用率に応じたグラデーション */
     td.green  { background-color: #c0f1c0ba; color: #000; }
     td.blue   { background-color: #3fddf2; color: #fff; }
@@ -127,7 +132,7 @@
 <body>
   <header style="display:flex;justify-content:space-between;align-items:center;
                padding:12px 20px;background:#fff;border-bottom:1px solid #ddd;">
-  <h2 style="margin:0;font-size:20px;">教室予約システム</h2>
+  <h2 style="margin:0;font-size:20px;"><a href="index.html">教室予約システム</a></h2>
   <div>
     <span id="loginInfo"></span>
     <button id="logoutBtn"
