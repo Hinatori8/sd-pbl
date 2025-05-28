@@ -79,8 +79,8 @@ int main(void){
         rooms[i].used[p][day]=true;
 
         Reservation nr={0};
-        snprintf(nr.user,sizeof nr.user,"%s",user);
-        snprintf(nr.room,sizeof nr.room,"%s",room);
+        snprintf(nr.user, sizeof nr.user, "%s", user);
+        snprintf(nr.room, sizeof nr.room, "%.15s", room);
         nr.day=day;nr.period=period;nr.ppl=ppl;
         reservations[reservation_count++]=nr;
 

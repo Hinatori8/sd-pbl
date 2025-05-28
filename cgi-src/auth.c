@@ -1,7 +1,10 @@
 /* auth.c  ── 初回登録＋ログイン兼用 */
+#define _POSIX_C_SOURCE 200809L    /* fileno が宣言される */
 #include <stdio.h>
+#include <stdlib.h>                /* atoi, getenv, malloc, free */
 #include <string.h>
-#include <openssl/sha.h>   /* -lcrypto をリンク */
+#include <unistd.h>                /* fileno */
+#include <openssl/sha.h>
 #include <sys/file.h>
 #include "schedule.h"
 
@@ -42,8 +45,13 @@ static void sha256hex(const char *s,char out[65]){
 int main(void){
     /* 1) JSON 受信: {"uid":"g1234567","pwd":"1234","seed":"5678"} */
     char uid[10],pwd[8],seed[8]={0};
-    int len=atoi(getenv("CONTENT_LENGTH")?: "0");
-    char *body=malloc(len+1); fread(body,1,len,stdin); body[len]=0;
+    const char *cl = getenv("CONTENT_LENGTH");
+    int len = cl ? atoi(cl) : 0;
+    char *body=malloc(len+1);
+    if(!body || fread(body,1,len,stdin)!=(size_t)len){
+        puts("Status:400\r\n\r\n{}"); return 0;
+    }
+    body[len]=0;
     sscanf(body,"{\"uid\":\"%9[^\"]\",\"pwd\":\"%7[^\"]\",\"seed\":\"%7[^\"]\"}",uid,pwd,seed);
     free(body);
 

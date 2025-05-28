@@ -1,24 +1,22 @@
 #!/usr/bin/env bash
-# compile_cgis.sh  ---- build CGI into ./cgi-bin  (sources in ./cgi-src)
+#  🔧 すべての .cgi を ./cgi-bin にフラット生成
 set -e
-cd "$(dirname "$0")"        # プロジェクトルートへ
+cd "$(dirname "$0")"
 
-SRCDIR="cgi-src"            # ← .c が入っているフォルダ
-OUTDIR="cgi-bin"
+SRCDIR="cgi-src"   # ここに *.c
+OUTDIR="cgi-bin"   # ここへ *.cgi
 mkdir -p "$OUTDIR"
 
 CC=gcc
 CFLAGS="-std=c11 -O2 -Wall"
 COMMON="$SRCDIR/reservation.c $SRCDIR/schedule.c"
 
-build () {           # build <out> <srcs...> [libs...]
-  echo " -> $1"
-  $CC $CFLAGS -o "$OUTDIR/$1" "${@:2}" || { echo "✗ $1"; exit 1; }
-}
+build(){ echo " -> $1"; $CC $CFLAGS -o "$OUTDIR/$1" "${@:2}"; }
 
 echo "== Building CGI =="
+
 build auth.cgi               $SRCDIR/auth.c                        -lcrypto
-build seed.cgi               $SRCDIR/server_time.c
+build seed.cgi               $SRCDIR/seed.c
 build reserve.cgi            $SRCDIR/reserve.c            $COMMON  -lm
 build cancel_reservation.cgi $SRCDIR/cancel_reservation.c $COMMON  -lm
 build my_reservations.cgi    $SRCDIR/my_reservations.c    $COMMON  -lm
