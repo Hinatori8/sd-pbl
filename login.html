@@ -22,25 +22,28 @@
 </div>
 
 <script type="module">
-/* 1) seed を取得（同期 CGI があるなら /cgi-bin/seed.cgi に置換） */
-const seed = await fetch('/cgi-bin/seed.cgi').then(r => r.text());
-document.getElementById('seed').textContent = seed.trim();
+const seedTxt = await fetch('/cgi-bin/seed.cgi').then(r => r.text());
+document.getElementById('seed').textContent = seedTxt.trim();
 
-/* 2) ログイン処理 */
 async function doLogin(){
   const uid = uidI.value.trim();
   const pwd = pwdI.value.trim();
   errT.textContent = '';
+
   if(!/^g\d{7}$/.test(uid)){errT.textContent='学籍番号が不正';return;}
-  if(!/^\d{4}$/.test(pwd))  {errT.textContent='パスワードは4桁';return;}
+  if(!/^\d{4}$/.test(pwd)){errT.textContent='パスワードは4桁';return;}
 
   const res  = await fetch('/cgi-bin/auth.cgi',{
     method:'POST',
     headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({uid,pwd,seed})
+    body:JSON.stringify({uid,pwd,seed:seedTxt})
   });
   const json = await res.json();
   if(!json.success){errT.textContent=json.msg||'ログイン失敗';return;}
+
+  /* ここを追加――他ページが参照するため uid を保存 */
+  localStorage.setItem('uid', uid);
+
   location.href='index.html';
 }
 
