@@ -16,6 +16,12 @@
       text-align: center;
       color: #2c3e50;
     }
+    /* 追加: 見出し内の画像サイズを文字サイズに合わせる */
+    h1 img {
+      height: 1em;   /* h1 のフォントサイズと同じ高さにする */
+      vertical-align: middle;
+    }
+
     nav {
       text-align: left;    /* 左寄せ */
       margin-top: 30px;
@@ -107,32 +113,35 @@
 <body>
   <header style="display:flex;justify-content:space-between;align-items:center;
                padding:12px 20px;background:#fff;border-bottom:1px solid #ddd;">
-  <h2 style="margin:0;font-size:20px;">教室予約システム</h2>
-  <div>
-    <span id="loginInfo"></span>
-    <button id="logoutBtn"
-            style="margin-left:12px;padding:4px 10px;border:1px solid #ccc;
-                   border-radius:4px;cursor:pointer">ログアウト</button>
-  </div>
-</header>
+    <h2 style="margin:0;font-size:20px;">教室予約システム</h2>
+    <div>
+      <span id="loginInfo"></span>
+      <button id="logoutBtn"
+              style="margin-left:12px;padding:4px 10px;border:1px solid #ccc;
+                     border-radius:4px;cursor:pointer">ログアウト</button>
+    </div>
+  </header>
 
-<script>
-(function enforceLogin(){
-  const uid = localStorage.getItem('uid');
+  <script>
+  (function enforceLogin(){
+    const uid = localStorage.getItem('uid');
 
-  if(!uid || !/^g\d{7}$/.test(uid)){
-    location.replace('login.html');
-    return;
-  }
-  document.getElementById('loginInfo').textContent = `学籍番号: ${uid}`;
-  document.getElementById('logoutBtn').onclick = ()=>{
-    localStorage.removeItem('uid');
-    location.replace('login.html');
-  };
-})();
-</script>
+    if(!uid || !/^g\d{7}$/.test(uid)){
+      location.replace('login.html');
+      return;
+    }
+    document.getElementById('loginInfo').textContent = `学籍番号: ${uid}`;
+    document.getElementById('logoutBtn').onclick = ()=>{
+      localStorage.removeItem('uid');
+      location.replace('login.html');
+    };
+  })();
+  </script>
 
-  <h1>空き教室検索</h1>
+  <!-- 見出しを画像に置き換え -->
+  <h1>
+    <img src="./images/other/TCU.jpg" alt="空き教室検索">
+  </h1>
 
   <!-- 追加: サーバー時刻表示 -->
   <div style="text-align:center; margin-bottom:1em;">
@@ -155,8 +164,7 @@
     // 1秒ごとに更新
     setInterval(updateServerTime, 1_000);
   });
-</script>
-
+  </script>
 
   <label for="day">曜日を選択:</label>
   <select id="day">
