@@ -242,6 +242,7 @@
         <option>水曜日</option>
         <option>木曜日</option>
         <option>金曜日</option>
+        <option>土曜日</option>
       </select>
 
       <label for="period">時限を選択</label>
@@ -284,7 +285,7 @@
     });
 
     /* Day map */
-    const dayMap = { "月曜日":0, "火曜日":1, "水曜日":2, "木曜日":3, "金曜日":4 };
+    const dayMap = { "月曜日":0, "火曜日":1, "水曜日":2, "木曜日":3, "金曜日":4, "土曜日":5};
 
     function getRoomInfo(room){
       const m = room.match(/^(\d)([0-9A-Z])/);
@@ -336,7 +337,7 @@
 
     async function reserveRoom(room, day, period){
       const uid = localStorage.getItem('uid');
-      const dayNames = ['月','火','水','木','金'];
+      const dayNames = ['月','火','水','木','金','土'];
       if(!confirm(`${room} を${dayNames[day]}曜日 ${period}限で予約しますか？`)) return;
       const people = parseInt(prompt('何人で利用しますか？','1'),10);
       if(isNaN(people) || people<=0){
