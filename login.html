@@ -3,36 +3,109 @@
 <head>
   <meta charset="UTF-8">
   <title>ログイン - Roomie@TCU</title>
-
-  <!-- ------------ スタイルはそのまま ------------- -->
+  <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    :root { --primary:#2196f3;--primary-dark:#1976d2;--accent:#ff4081;
-      --surface:#fff;--bg:#eef4fb;--text:#333;
-      --radius-lg:14px;--radius-sm:8px;
-      --shadow-sm:0 2px 4px rgba(0,0,0,.08);
-      --shadow-md:0 4px 12px rgba(0,0,0,.12);}
-    html,body{margin:0;padding:0;height:100%;font-family:"Poppins","Noto Sans JP",sans-serif;
-      background:var(--bg);color:var(--text);display:flex;justify-content:center;align-items:center;}
-    .card{background:var(--surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);
-      padding:40px 48px;width:min(90%,420px);text-align:center;}
-    .card img.logo-img{height:60px;margin-bottom:12px;}
-    .card h1{margin:0 0 12px;font-size:1.8rem;color:var(--primary-dark);}
-    .card p{font-size:.95rem;margin:0 0 18px;}
-    input{width:100%;padding:12px;font-size:1rem;border:1px solid #c5d4e0;
-      border-radius:var(--radius-sm);margin-top:8px;box-sizing:border-box;}
-    button.primary{width:100%;padding:12px 0;margin-top:26px;background:var(--primary);
-      color:#fff;font-size:1rem;font-weight:600;border:none;border-radius:var(--radius-sm);
-      cursor:pointer;transition:background .25s;}
-    button.primary:hover{background:var(--primary-dark);}
-    .error{color:#e74c3c;margin-top:8px;min-height:1.4em;}
+    /* ---------- カラーパレット & ベース --------- */
+    :root {
+      --primary: #2196f3;          /* マスコットのブルー */
+      --primary-dark: #1976d2;
+      --accent: #ff4081;           /* リボンのピンク */
+      --surface: #ffffff;
+      --bg: #eef4fb;
+      --text: #333;
+      --radius-lg: 14px;
+      --radius-sm: 8px;
+      --shadow-sm: 0 2px 4px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
+    }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      font-family: "Poppins", "Noto Sans JP", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    /* ---------- カード ---------- */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: 40px 48px;
+      width: min(90%, 420px);
+      text-align: center;
+    }
+    .card img.logo-img {
+      height: 60px;
+      margin-bottom: 12px;
+    }
+    .card h1 {
+      margin: 0 0 12px;
+      font-size: 1.8rem;
+      color: var(--primary-dark);
+    }
+    .card p {
+      font-size: 0.95rem;
+      margin: 0 0 18px;
+    }
+
+    /* ---------- フォーム ---------- */
+    input {
+      width: 100%;
+      padding: 12px;
+      font-size: 1rem;
+      border: 1px solid #c5d4e0;
+      border-radius: var(--radius-sm);
+      margin-top: 8px;
+      box-sizing: border-box;
+    }
+    button.primary {
+      width: 100%;
+      padding: 12px 0;
+      margin-top: 26px;
+      background: var(--primary);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: background 0.25s;
+    }
+    button.primary:hover { background: var(--primary-dark); }
+
+    .seed {
+      font-size: 1.4rem;
+      letter-spacing: 3px;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 12px;
+    }
+    .note {
+      font-size: 0.85rem;
+      color: #555;
+      margin-bottom: 6px;
+    }
+    .error {
+      color: #e74c3c;
+      margin-top: 8px;
+      min-height: 1.4em;
+    }
   </style>
 </head>
 <body>
   <div class="card">
     <img src="./images/other/TCU.jpg" alt="TCU Mascot" class="logo-img">
     <h1>Roomie@TCU</h1>
-    <p>学籍番号（g + 7 桁）と<br>パスワード（4 桁）を入力してください</p>
+    <p>学籍番号（g + 7 桁）とパスワード（4 桁）を入力してください</p>
+    <div class="note">初回のみ、下の 4 桁をパスワードとして使用してください。</div>
+    <div id="seed" class="seed"></div>
 
     <input id="uid" placeholder="g1234567" maxlength="9" autofocus>
     <input id="pwd" placeholder="パスワード" maxlength="4" type="password">
@@ -40,65 +113,51 @@
     <button id="loginBtn" class="primary">ログイン</button>
   </div>
 
-  <!-- ------------ Firebase SDK (v10) ------------- -->
-  <script type="module">
-    /* ===== 1. SDK 読み込み ===== */
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword }
-      from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  <script>
+    // ---- 1. 乱数生成（4 桁）と表示 ------------------------------
+    const seed = Math.floor(1000 + Math.random() * 9000).toString();
+    document.getElementById('seed').textContent = seed;
 
-    /* ===== 2. Firebase 設定 ===== */
-    const firebaseConfig = {
-      apiKey:     "YOUR_API_KEY",
-      authDomain: "YOUR_PROJECT.firebaseapp.com",
-      projectId:  "YOUR_PROJECT",
-      appId:      "YOUR_APP_ID", // ← 末尾カンマ
-      // measurementId や storageBucket などは必要なら追加
+    // ---- 2. ユーザー情報ユーティリティ -------------------------
+    const getUsers = () => {
+      try { return JSON.parse(localStorage.getItem('users') || '{}'); }
+      catch (_) { return {}; }
     };
-    const app  = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
+    const setUsers = obj => localStorage.setItem('users', JSON.stringify(obj));
 
-    /* ===== 3. ログイン処理 ===== */
-    const $ = id => document.getElementById(id);
+    // ---- 3. ログイン処理 ----------------------------------------
+    function doLogin(){
+      const uid = document.getElementById('uid').value.trim();
+      const pwd = document.getElementById('pwd').value.trim();
+      const err = document.getElementById('err');
+      err.textContent = '';
 
-    async function doLogin(){
-      const uid = $("uid").value.trim();
-      const pwd = $("pwd").value.trim();
-      const err = $("err");
-      err.textContent = "";
+      if(!/^g\d{7}$/.test(uid))      { err.textContent = '学籍番号の形式が正しくありません'; return; }
+      if(!/^\d{4}$/.test(pwd))       { err.textContent = 'パスワードは 4 桁の数字で入力してください'; return; }
 
-      /* -- 入力バリデーション -- */
-      if(!/^g\d{7}$/.test(uid)){
-        err.textContent = "学籍番号の形式が正しくありません"; return;
+      const users = getUsers();
+      if(!(uid in users)){
+        // 初回ログイン
+        if(pwd !== seed){ err.textContent = '初回は上記の 4 桁の数字をパスワードとして入力してください'; return; }
+        users[uid] = pwd;  // 初回パスワードを保存
+        setUsers(users);
+      } else {
+        // 2 回目以降
+        if(users[uid] !== pwd){ err.textContent = 'パスワードが正しくありません'; return; }
       }
-      if(!/^\d{4}$/.test(pwd)){
-        err.textContent = "パスワードは 4 桁の数字で入力してください"; return;
-      }
 
-      /* -- Firebase Auth -- */
-      const email = `${uid}@tcu.example`; // 疑似メール
-      try{
-        await signInWithEmailAndPassword(auth, email, pwd);
-      }catch(e){
-        if(e.code === "auth/user-not-found"){
-          await createUserWithEmailAndPassword(auth, email, pwd);  // 自動登録
-        }else if(e.code === "auth/wrong-password"){
-          err.textContent = "パスワードが正しくありません"; return;
-        }else{
-          err.textContent = "エラー: " + e.code; return;
-        }
-      }
-      sessionStorage.setItem("uid", uid);
-      location.href = "index.html";
+      // 認証 OK
+      localStorage.setItem('uid', uid);
+      location.href = 'index.html';
     }
 
-    /* ===== 4. UI イベント ===== */
-    $("loginBtn").onclick = doLogin;
-    ["uid","pwd"].forEach(id =>
-      $(id).addEventListener("keydown", e => {
-        if(e.key === "Enter") doLogin();
-      })
-    );
+    // ---- 4. ボタン & Enter キー --------------------------------
+    document.getElementById('loginBtn').onclick = doLogin;
+    ['uid','pwd'].forEach(id => {
+      document.getElementById(id).addEventListener('keydown', e => {
+        if(e.key === 'Enter') doLogin();
+      });
+    });
   </script>
 </body>
 </html>
