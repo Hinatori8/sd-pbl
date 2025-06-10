@@ -1,133 +1,226 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<title>マイ予約一覧</title>
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<style>
- body{font-family:"Segoe UI",sans-serif;background:#f5f7fa;margin:0}
- header{display:flex;justify-content:space-between;align-items:center;
-        padding:12px 20px;background:#fff;border-bottom:1px solid #ddd}
- #resList{max-width:800px;margin:30px auto;background:#fff;padding:20px;
-          border:1px solid #ddd;border-radius:10px;box-shadow:0 2px 4px rgba(0,0,0,.08)}
- ul{list-style:none;padding:0}
- li{margin-bottom:14px}
- button{margin-left:8px;padding:4px 10px;border:1px solid #ccc;border-radius:4px;
-        cursor:pointer}
- button:hover{background:#f0f0f0}
- /* 教室リンク */
-li a {
-  color: #3498db;
-  font-weight: bold;
-  text-decoration: none;
-}
-li a:hover {
-  text-decoration: underline;
-}
-header h2 a,
-header h2 a:visited {      /* クリック後も色を保持 */
-  color: #333;             /* 完全な黒なら #000 に */
-  text-decoration: none;
-}
+  <meta charset="UTF-8">
+  <title>マイ予約一覧 - Roomie@TCU</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #2196f3;
+      --primary-dark: #1976d2;
+      --accent: #ff4081;
+      --surface: #ffffff;
+      --bg: #eef4fb;
+      --text: #333;
+      --radius-lg: 14px;
+      --radius-sm: 8px;
+      --shadow-sm: 0 2px 4px rgba(0,0,0,0.08);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.12);
+    }
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: "Poppins", "Noto Sans JP", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+    /* ───────── トップバー ───────── */
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 24px;
+      background: var(--surface);
+      box-shadow: var(--shadow-sm);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .logo-img { height: 42px; }
+    .site-title {
+      font-size: 1.25rem;
+      font-weight: 600;
+      color: var(--primary);
+    }
+    .auth {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.9rem;
+    }
+    .auth button {
+      padding: 6px 14px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: opacity 0.25s;
+    }
+    .auth button:hover { opacity: .85; }
 
-</style>
+    /* ───────── レイアウト ───────── */
+    .container {
+      max-width: 860px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+    h1 {
+      text-align: center;
+      margin: 0 0 24px;
+      font-size: 2rem;
+      color: var(--primary-dark);
+    }
+
+    /* ───────── カード ───────── */
+    .card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-md);
+      padding: 28px 32px;
+    }
+
+    /* ───────── 予約リスト ───────── */
+    ul.res-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .res-item {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      background: #fafcfe;
+      border: 1px solid #d7e1ed;
+      border-radius: var(--radius-sm);
+      padding: 12px 16px;
+      box-shadow: var(--shadow-sm);
+    }
+    .res-item a {
+      color: var(--primary-dark);
+      font-weight: 600;
+      text-decoration: none;
+    }
+    .res-item a:hover { text-decoration: underline; }
+    .res-item button {
+      padding: 6px 14px;
+      background: var(--accent);
+      border: none;
+      border-radius: var(--radius-sm);
+      color: #fff;
+      font-size: 0.85rem;
+      cursor: pointer;
+      transition: opacity 0.25s;
+    }
+    .res-item button:hover { opacity: .85; }
+
+    /* ───────── レスポンシブ ───────── */
+    @media (max-width: 600px) {
+      .logo-img { height: 36px; }
+    }
+  </style>
 </head>
 <body>
-<!-- 共通ヘッダー -->
-<header>
-  <h2 style="margin:0;font-size:20px;"><a href="index.html">メインに戻る</a></h2>
-  <div>
-    <span id="loginInfo"></span>
-    <button id="logoutBtn" style="margin-left:12px">ログアウト</button>
-  </div>
-</header>
+  <!-- ▼ トップバー -->
+  <header class="topbar">
+    <div class="logo">
+      <img src="./images/other/TCU.jpg" class="logo-img" alt="TCU Mascot">
+      <span class="site-title">Roomie@TCU</span>
+    </div>
+    <div class="auth">
+      <span id="loginInfo"></span>
+      <button id="logoutBtn">ログアウト</button>
+    </div>
+  </header>
 
-<div id="resList"><p>読み込み中…</p></div>
+  <main class="container">
+    <h1>マイ予約一覧</h1>
+    <section class="card" id="resList"><p>読み込み中…</p></section>
+  </main>
 
-<script>
-/* ----- ログイン強制 & 表示 ----- */
-(function(){
-  const uid = localStorage.getItem('uid');
-  if(!uid || !/^g\d{7}$/.test(uid)){
-    location.replace('login.html'); return;
-  }
-  document.getElementById('loginInfo').textContent = `学籍番号: ${uid}`;
-  document.getElementById('logoutBtn').onclick = ()=>{
-    localStorage.removeItem('uid'); location.replace('login.html');
-  };
-})();
+  <nav style="text-align:center; margin-bottom: 40px;">
+    <a href="index.html" style="color: var(--primary); font-weight: 600; text-decoration: none;">空き教室検索へ戻る</a>
+  </nav>
 
-/* ----- 予約一覧取得 ----- */
-async function loadList(){
-  const uid = localStorage.getItem('uid');
-  const res = await fetch('/cgi-bin/my_reservations.cgi',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({user:uid}), cache:'no-store'});
-  const data = await res.json();
-  const cont = document.getElementById('resList');
-  cont.innerHTML = '';
+  <script>
+    /* --- ログイン強制 & 表示 --- */
+    (function(){
+      const uid = localStorage.getItem('uid');
+      if(!uid || !/^g\d{7}$/.test(uid)){
+        location.replace('login.html'); return;
+      }
+      document.getElementById('loginInfo').textContent = `学籍番号: ${uid}`;
+      document.getElementById('logoutBtn').onclick = ()=>{
+        localStorage.removeItem('uid'); location.replace('login.html');
+      };
+    })();
 
-  if(!data.reservations || !data.reservations.length){
-    cont.innerHTML = '<p>予約はありません。</p>'; return;
-  }
-  const days = ["月","火","水","木","金","土"];
-  const ul = document.createElement('ul');
-  data.reservations.forEach(r=>{
-    const li = document.createElement('li');
+    /* --- 予約一覧取得 & 描画 --- */
+    async function loadList(){
+      const uid = localStorage.getItem('uid');
+      try {
+        const res = await fetch('/cgi-bin/my_reservations.cgi', {
+          method:'POST', headers:{'Content-Type':'application/json'},
+          body: JSON.stringify({ user: uid }), cache: 'no-store'
+        });
+        if(!res.ok) throw new Error(res.status);
+        const data = await res.json();
+        renderList(data.reservations || []);
+      } catch(e){
+        document.getElementById('resList').innerHTML = '<p>取得に失敗しました。</p>';
+        console.error(e);
+      }
+    }
+    function renderList(arr){
+      const cont = document.getElementById('resList');
+      if(arr.length === 0){ cont.innerHTML = '<p>予約はありません。</p>'; return; }
+      const days = ['月','火','水','木','金','土'];
+      let html = '<ul class="res-list">';
+      arr.forEach(r=>{
+        html += `<li class="res-item">
+                    <a href="room.html?room=${encodeURIComponent(r.room)}">教室 ${r.room}</a>
+                    <span>— ${days[r.day]}曜 ${r.period}限 (${r.people}人)</span>
+                    <button onclick="cancelResv(${r.day},${r.period},'${r.room}')">キャンセル</button>
+                    <button onclick="editResv(${r.day},${r.period},'${r.room}',${r.people})">人数変更</button>
+                  </li>`;
+      });
+      html += '</ul>';
+      cont.innerHTML = html;
+    }
 
-    /* --- 教室リンク生成 --- */
-    const link = document.createElement('a');
-    link.href = `room.html?room=${encodeURIComponent(r.room)}`;
-    link.textContent = `教室 ${r.room}`;
-    li.appendChild(link);
+    async function cancelResv(day, period, room){
+      if(!confirm('キャンセルしますか？')) return;
+      const uid = localStorage.getItem('uid');
+      const res = await fetch('/cgi-bin/cancel_reservation.cgi', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ user: uid, room, day, period })
+      });
+      const j = await res.json();
+      if(j.success) loadList(); else alert(j.message);
+    }
+    async function editResv(day, period, room, people){
+      const ppl = parseInt(prompt('新しい人数', people),10);
+      if(isNaN(ppl)||ppl<=0) return;
+      const uid = localStorage.getItem('uid');
+      const res = await fetch('/cgi-bin/reserve.cgi', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ user: uid, room, day, period, people: ppl })
+      });
+      const j = await res.json();
+      if(j.success) loadList(); else alert(j.message);
+    }
 
-    /* --- 残りのテキスト（曜日・時限・人数） --- */
-    li.append(` — ${days[r.day]}曜 ${r.period}限 (${r.people}人)`);
-
-    /* --- 既存ボタン --- */
-    const cancel = document.createElement('button');
-    cancel.textContent = 'キャンセル';
-    cancel.onclick = ()=>cancelResv(r);
-
-    const edit   = document.createElement('button');
-    edit.textContent = '人数変更';
-    edit.onclick = ()=>editResv(r);
-
-    li.appendChild(cancel);
-    li.appendChild(edit);
-    ul.appendChild(li);
-  });
-  cont.appendChild(ul);
-}
-
-/* キャンセル */
-async function cancelResv(r){
-  if(!confirm('キャンセルしますか？')) return;
-  const uid = localStorage.getItem('uid');
-  const res = await fetch('/cgi-bin/cancel_reservation.cgi',{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({user:uid, room:r.room, day:r.day, period:r.period})
-  });
-  const j = await res.json();
-  if(j.success) loadList(); else alert(j.message);
-}
-
-/* 人数変更 */
-async function editResv(r){
-  const ppl = parseInt(prompt('新しい人数', r.people),10);
-  if(isNaN(ppl)||ppl<=0) return;
-  const uid = localStorage.getItem('uid');
-  const res = await fetch('/cgi-bin/reserve.cgi',{
-    method:'POST',headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({user:uid, room:r.room, day:r.day,
-                         period:r.period, people:ppl})
-  });
-  const j = await res.json();
-  if(j.success) loadList(); else alert(j.message);
-}
-
-document.addEventListener('DOMContentLoaded', loadList);
-</script>
+    document.addEventListener('DOMContentLoaded', loadList);
+  </script>
 </body>
 </html>

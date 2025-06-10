@@ -1,288 +1,204 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <title>教室情報</title>
+  <meta charset="UTF-8">
+  <title>教室情報 - Roomie@TCU</title>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
   <style>
-    body {
-      font-family: "Segoe UI", sans-serif;
-      background: #f4f7f9;
-      color: #333;
-      padding: 30px;
-      max-width: 1350px;
-      margin: auto;
+    :root{
+      --primary:#2196f3;
+      --primary-dark:#1976d2;
+      --accent:#ff4081;
+      --surface:#fff;
+      --bg:#eef4fb;
+      --text:#333;
+      --radius-lg:14px;
+      --radius-sm:8px;
+      --shadow-sm:0 2px 4px rgba(0,0,0,0.08);
+      --shadow-md:0 4px 12px rgba(0,0,0,0.12);
     }
-    h1 {
-      text-align: center;
-      color: #2c3e50;
-      margin-bottom: 30px;
-    }
-    /* 詳細情報セクション */
-    #details {
-      background: white;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-      padding: 24px;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      margin-bottom: 24px;
-    }
-    #details dl {
-      display: grid;
-      grid-template-columns: 150px 1fr;
-      row-gap: 9px;
-    }
-    #details dt {
-      font-weight: bold;
-      color: #16a085;
-    }
-    /* 下部セクション: カレンダーと画像 */
-    .bottom {
-      display: flex;
-      gap: 24px;
-      align-items: flex-start;
-    }
-    #timetable {
-      flex: 2;
-      width: auto;
-      border-collapse: collapse;
-      background: white;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      margin: 0;
-    }
-    #timetable th, #timetable td {
-      border: 1px solid #ddd;
-      padding: 9px;
-      text-align: center;
-    }
-    #timetable th {
-      background: #2980b9;
-      color: white;
-    }
-    /* 縦並び画像ギャラリー */
-    .vertical-gallery {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .vertical-gallery img {
-      width: 100%;
-      border-radius: 6px;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-    }
-    /* ○×表示 */
-    td.used {
-      background-color: rgba(255, 0, 0, 0.06);
-      color: red;
-      font-weight: bold;
-      font-size: 1em;
-    }
-    td.free {
-      background-color: rgba(0, 128, 0, 0.06);
-      color: green;
-      font-weight: bold;
-      font-size: 1em;
-    }
-    /* デバイス詳細テーブル */
-    .device-table {
-      width: 100%;
-      border-collapse: collapse;
-      background: #fdfdfd;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-      margin-top: 12px;
-    }
-    .device-table th, .device-table td {
-      border: 1px solid #ddd;
-      padding: 6px;
-      text-align: center;
-    }
-    .device-table th {
-      background: #ecf0f1;
-      font-weight: bold;
-    }
-    @media (max-width: 768px) {
-      .bottom {
-        flex-direction: column;
-      }
-      .vertical-gallery img {
-        width: 100%;
-      }
-    }
-    /* × のセルはグレー */
-    td.gray {
-      background-color: #ccc;
-      color: #333;
-    }
-    header h2 a,
-    header h2 a:visited {      /* クリック後も色を保持 */
-    color: #333;             /* 完全な黒なら #000 に */
-    text-decoration: none;
-    }
-    /* 利用率に応じたグラデーション */
-    td.green  { background-color: #c0f1c0ba; color: #000; }
-    td.blue   { background-color: #3fddf2; color: #fff; }
-    td.yellow { background-color: #e2e251; color: #000; }
-    td.orange { background-color: #f1ab29; color: #000; }
-    td.red    { background-color: #f68888; color: #fff; }
-    
-    /* テキスト中央寄せ */
-    td { text-align: center; }
+    html,body{margin:0;padding:0;font-family:"Poppins","Noto Sans JP",sans-serif;background:var(--bg);color:var(--text);}
+
+    /* ───────── トップバー ───────── */
+    .topbar{display:flex;justify-content:space-between;align-items:center;padding:10px 24px;background:var(--surface);box-shadow:var(--shadow-sm);position:sticky;top:0;z-index:10;}
+    .logo{display:flex;align-items:center;gap:12px;}
+    .logo-img{height:42px;}
+    .site-title{font-size:1.25rem;font-weight:600;color:var(--primary);}
+    .auth{display:flex;align-items:center;gap:12px;font-size:0.9rem;}
+    .auth button{padding:6px 14px;background:var(--accent);color:#fff;border:none;border-radius:var(--radius-sm);cursor:pointer;transition:opacity .25s;}
+    .auth button:hover{opacity:.85;}
+
+    /* ───────── レイアウト ───────── */
+    .container{max-width:1200px;margin:40px auto;padding:0 20px;}
+    h1{text-align:center;font-size:2rem;color:var(--primary-dark);margin:0 0 24px;}
+
+    /* ───────── カード ───────── */
+    .card{background:var(--surface);border-radius:var(--radius-lg);box-shadow:var(--shadow-md);padding:28px 32px;margin-bottom:32px;}
+    .card dl{display:grid;grid-template-columns:160px 1fr;row-gap:10px;}
+    .card dt{font-weight:600;color:var(--primary-dark);}
+
+    /* ───────── 時限表 & ギャラリー ───────── */
+    .flex-wrap{display:flex;gap:24px;align-items:flex-start;flex-wrap:wrap;}
+    #timetable{flex:2;border-collapse:collapse;background:var(--surface);box-shadow:var(--shadow-sm);}
+    #timetable th,#timetable td{border:1px solid #d7e1ed;padding:9px;text-align:center;}
+    #timetable th{background:var(--primary-dark);color:#fff;}
+    .gallery{flex:1;display:flex;flex-direction:column;gap:14px;}
+    .gallery img{width:100%;border-radius:var(--radius-sm);box-shadow:var(--shadow-sm);}
+
+    /* ───────── 設備テーブル ───────── */
+    .device-table{width:100%;border-collapse:collapse;background:#fafcfe;box-shadow:var(--shadow-sm);margin-top:16px;}
+    .device-table th,.device-table td{border:1px solid #d7e1ed;padding:6px;text-align:center;}
+    .device-table th{background:#ecf0f1;font-weight:bold;}
+
+    /* ───────── 利用率セル色 ───────── */
+    td.gray{background:#ccc;color:#333;}
+    td.green{background:#c0f1c0ba;color:#000;}
+    td.blue{background:#3fddf2;color:#fff;}
+    td.yellow{background:#e2e251;color:#000;}
+    td.orange{background:#f1ab29;color:#000;}
+    td.red{background:#f68888;color:#fff;}
+
+    @media(max-width:768px){.logo-img{height:36px;}.flex-wrap{flex-direction:column;}}
   </style>
 </head>
 <body>
-  <header style="display:flex;justify-content:space-between;align-items:center;
-               padding:12px 20px;background:#fff;border-bottom:1px solid #ddd;">
-  <h2 style="margin:0;font-size:20px;"><a href="index.html">メインに戻る</a></h2>
-  <div>
-    <span id="loginInfo"></span>
-    <button id="logoutBtn"
-            style="margin-left:12px;padding:4px 10px;border:1px solid #ccc;
-                   border-radius:4px;cursor:pointer">ログアウト</button>
-  </div>
-</header>
+  <!-- ▼ トップバー -->
+  <header class="topbar">
+    <div class="logo">
+      <img src="./images/other/TCU.jpg" class="logo-img" alt="TCU Mascot">
+      <span class="site-title">Roomie@TCU</span>
+    </div>
+    <div class="auth">
+      <span id="loginInfo"></span>
+      <button id="logoutBtn">ログアウト</button>
+    </div>
+  </header>
 
-<script>
-(function enforceLogin(){
-  const uid = localStorage.getItem('uid');
-  if(!uid || !/^g\d{7}$/.test(uid)){
-    location.replace('login.html');
-    return;
-  }
-  document.getElementById('loginInfo').textContent = `学籍番号: ${uid}`;
-  document.getElementById('logoutBtn').onclick = ()=>{
-    localStorage.removeItem('uid');
-    location.replace('login.html');
-  };
-})();
-</script>
+  <main class="container">
+    <h1 id="title">教室詳細</h1>
+    <section id="details" class="card"></section>
+    <div class="flex-wrap">
+      <table id="timetable"></table>
+      <div class="gallery" id="image-gallery"></div>
+    </div>
+  </main>
 
-  <h1 id="title">教室詳細</h1>
-  <div id="details"></div>
-
-  <div class="bottom">
-    <!-- カレンダー -->
-    <table id="timetable"></table>
-    <!-- 縦並び画像 -->
-    <div class="vertical-gallery" id="image-gallery"></div>
-  </div>
+  <nav style="text-align:center;margin-bottom:40px;">
+    <a href="index.html" style="color:var(--primary);font-weight:600;text-decoration:none;">空き教室検索へ戻る</a>
+  </nav>
 
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      const params = new URLSearchParams(location.search);
-      const roomId = params.get("room");
-      if (!roomId) {
-        document.getElementById("details").innerHTML = "<p>教室 ID が指定されていません。</p>";
-        return;
+    /* --- ログイン強制 & 表示 --- */
+    (function(){
+      const uid = localStorage.getItem('uid');
+      if(!uid || !/^g\d{7}$/.test(uid)){
+        location.replace('login.html'); return;
       }
-      document.getElementById("title").textContent = `教室 ${roomId} の情報`;
-      document.title = `教室 ${roomId} - TCU 教室検索`;
+      document.getElementById('loginInfo').textContent = `学籍番号: ${uid}`;
+      document.getElementById('logoutBtn').onclick = ()=>{
+        localStorage.removeItem('uid'); location.replace('login.html');
+      };
+    })();
 
-      // カレンダー更新処理を関数化
-      async function updateCalendar() {
-        try {
+    /* --- 初期化 --- */
+    document.addEventListener('DOMContentLoaded', init);
+
+    function init(){
+      const params = new URLSearchParams(location.search);
+      const roomId = params.get('room');
+      if(!roomId){ document.getElementById('details').innerHTML = '<p>教室 ID が指定されていません。</p>'; return; }
+      document.getElementById('title').textContent = `教室 ${roomId} の情報`;
+      document.title = `教室 ${roomId} - Roomie@TCU`;
+
+      let lastVersion = null;
+      async function updateAll(){
+        try{
           const res = await fetch(`/cgi-bin/room.cgi?room=${encodeURIComponent(roomId)}`);
-          if (!res.ok) throw new Error(res.status);
+          if(!res.ok) throw new Error(res.status);
           const data = await res.json();
-
-          // 詳細情報描画
-          const filtered = Array.isArray(data.features) ? data.features.filter(f => f) : [];
-          document.getElementById("details").innerHTML = `
-            <dl>
-              <dt>座席数</dt><dd>${data.capacity}</dd>
-              <dt>机の種類</dt><dd>${data.desk}</dd>
-              <dt>充電</dt><dd>${data.charge}</dd>
-              <dt>設備</dt><dd>${filtered.length ? `<ul>${filtered.map(f => `<li>${f}</li>`).join('')}</ul>` : '設備情報なし'}</dd>
-            </dl>
-            <details>
-              <summary>さらに詳しく</summary>
-              <table class="device-table">
-                <thead>
-                  <tr><th colspan="2">マイク</th><th colspan="5">映像機器</th><th colspan="3">外部入力</th><th colspan="2">持ち込みPC接続</th></tr>
-                  <tr><th>有線</th><th>無線</th><th>TV</th><th>BD</th><th>DVD</th><th>VHS</th><th>OD</th><th>PC</th><th>MIC</th><th>HDMI</th><th>Webカメラ(USB)</th><th>マイク音声(USB)</th></tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td>${data.wired_mic}</td><td>${data.wireless_mic}</td>
-                    <td>${data.tv?'○':'×'}</td><td>${data.bd?'○':'×'}</td><td>${data.dvd?'○':'×'}</td><td>${data.vhs?'○':'×'}</td><td>${data.od?'○':'×'}</td>
-                    <td>${data.pc?'○':'×'}</td><td>${data.mic?'○':'×'}</td><td>${data.hdmi?'○':'×'}</td>
-                    <td>${data.webcam?'○':'×'}</td><td>${data.mic_input?'○':'×'}</td>
-                  </tr>
-                </tbody>
-              </table>
-            </details>
-          `;
-
-          // 時限表描画
-          const days = ["月","火","水","木","金","土"];
-          let html = '<thead><tr><th>時限/曜日</th>' + days.map(d => `<th>${d}</th>`).join('') + '</tr></thead><tbody>';
-          for (let p = 0; p < data.initial_used.length; p++) {
-            html += `<tr><th>${p+1}限</th>`;
-            for (let d = 0; d < data.initial_used[p].length; d++) {
-              const isInit = data.initial_used[p][d];
-              let className, text, titleAttr = "";
-              if (isInit) {
-                className = "gray";
-                text = "×";
-              } else {
-                const pct = data.percent[p][d];
-                const ppl = data.ppl[p][d] || 0;
-                const cap = data.capacity;
-                titleAttr = ` title="${ppl}/${cap}"`;
-                if (pct == 0) className = "green";
-                else if (pct <= 20) className = "blue";
-                else if (pct <= 50) className = "yellow";
-                else if (pct <= 70) className = "orange";
-                else className = "red";
-                text = `${pct}%`;
-              }
-              html += `<td class="${className}"${titleAttr}>${text}</td>`;
+          renderDetails(data);
+          renderTable(data);
+          renderGallery(data);
+        }catch(e){
+          document.getElementById('details').innerHTML = '<p>読み込み失敗</p>';
+          console.error(e);
+        }
+      }
+      function renderDetails(d){
+        const feats = Array.isArray(d.features) ? d.features.filter(f=>f) : [];
+        document.getElementById('details').innerHTML = `
+          <dl>
+            <dt>座席数</dt><dd>${d.capacity}</dd>
+            <dt>机の種類</dt><dd>${d.desk}</dd>
+            <dt>充電</dt><dd>${d.charge}</dd>
+            <dt>設備</dt><dd>${feats.length ? '<ul>'+feats.map(f=>'<li>'+f+'</li>').join('')+'</ul>' : '設備情報なし'}</dd>
+          </dl>
+          <details>
+            <summary>さらに詳しく</summary>
+            ${renderDeviceTable(d)}
+          </details>`;
+      }
+      function renderDeviceTable(d){
+        return `<table class="device-table"><thead><tr><th colspan="2">マイク</th><th colspan="5">映像機器</th><th colspan="3">外部入力</th><th colspan="2">持ち込みPC接続</th></tr>
+        <tr><th>有線</th><th>無線</th><th>TV</th><th>BD</th><th>DVD</th><th>VHS</th><th>OD</th><th>PC</th><th>MIC</th><th>HDMI</th><th>Webカメラ</th><th>マイク音声</th></tr></thead>
+        <tbody><tr>
+          <td>${d.wired_mic}</td><td>${d.wireless_mic}</td>
+          <td>${d.tv?'○':'×'}</td><td>${d.bd?'○':'×'}</td><td>${d.dvd?'○':'×'}</td><td>${d.vhs?'○':'×'}</td><td>${d.od?'○':'×'}</td>
+          <td>${d.pc?'○':'×'}</td><td>${d.mic?'○':'×'}</td><td>${d.hdmi?'○':'×'}</td>
+          <td>${d.webcam?'○':'×'}</td><td>${d.mic_input?'○':'×'}</td>
+        </tr></tbody></table>`;
+      }
+      function renderTable(d){
+        const days = ['月','火','水','木','金','土'];
+        let html = '<thead><tr><th>時限/曜日</th>'+days.map(x=>`<th>${x}</th>`).join('')+'</tr></thead><tbody>';
+        for(let p=0;p<d.initial_used.length;p++){
+          html += `<tr><th>${p+1}限</th>`;
+          for(let k=0;k<d.initial_used[p].length;k++){
+            const init = d.initial_used[p][k];
+            let cls,txt,title='';
+            if(init){ cls='gray'; txt='×'; }
+            else {
+              const pct = d.percent[p][k];
+              const ppl = d.ppl[p][k] || 0;
+              title = ` title="${ppl}/${d.capacity}"`;
+              if(pct==0) cls='green';
+              else if(pct<=20) cls='blue';
+              else if(pct<=50) cls='yellow';
+              else if(pct<=70) cls='orange';
+              else cls='red';
+              txt = `${pct}%`;
             }
-            html += `</tr>`;
+            html += `<td class="${cls}"${title}>${txt}</td>`;
           }
-          html += '</tbody>';
-          document.getElementById("timetable").innerHTML = html;
-
-          // 画像ギャラリー描画
-          const gallery = document.getElementById("image-gallery");
-          gallery.innerHTML = '';
-          if (Array.isArray(data.images) && data.images.length) {
-            data.images.forEach(url => {
-              const img = document.createElement('img');
-              img.src = url;
-              img.alt = `教室 ${data.id} の画像`;
-              gallery.appendChild(img);
-            });
-          } else {
-            gallery.textContent = 'この教室の画像は登録されていません。';
-          }
-        } catch (err) {
-          document.getElementById("details").innerHTML = `<p>エラー: ${err}</p>`;
+          html += '</tr>';
+        }
+        html += '</tbody>';
+        document.getElementById('timetable').innerHTML = html;
+      }
+      function renderGallery(d){
+        const g = document.getElementById('image-gallery');
+        g.innerHTML = '';
+        if(Array.isArray(d.images) && d.images.length){
+          d.images.forEach(u=>{ const img=document.createElement('img'); img.src=u; img.alt=`教室 ${d.id}`; g.appendChild(img); });
+        } else {
+          g.textContent = '画像は登録されていません。';
         }
       }
 
-      // 初回描画
-      updateCalendar();
-      // 1分ごとに更新
-      setInterval(updateCalendar, 60000);
-
-      // ── 追加：スケジュールファイル更新版チェック ──
-      let lastVersion = null;
-      async function pollVersion() {
-        try {
+      updateAll();
+      setInterval(updateAll, 60000);
+      /* バージョンポーリング */
+      async function pollVersion(){
+        try{
           const res = await fetch('/cgi-bin/schedule_version.cgi', { cache: 'no-store' });
           const { version } = await res.json();
-          if (version !== lastVersion) {
-            lastVersion = version;
-            updateCalendar();
-          }
-        } catch (e) {
-          console.error('schedule_version check failed:', e);
-        }
+          if(version !== lastVersion){ lastVersion = version; updateAll(); }
+        } catch(e){ console.error(e); }
       }
-      // 初回と定期チェック（例：60秒ごと）
       pollVersion();
       setInterval(pollVersion, 60000);
-    });
+    }
   </script>
 </body>
 </html>
