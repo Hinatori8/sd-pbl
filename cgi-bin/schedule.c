@@ -32,6 +32,217 @@ const char *ChargeTypeNames[] = { "なし", "机固定", "延長コード" };
 const char *SizeTypeNames[] = {"大", "中", "小"}; 
 /* rooms[] に必要な数だけ記載 */
 Room rooms[ROOM_MAX] = {
+  {
+  .id       = "11A", // 教室名
+  .capacity = 120,    // 座席数
+  .features = (1u << FEAT_BLACKBOARD) | (1u<<FEAT_LAN), //黒板とLANがあるという意味
+  //(1U << あるもの)と書く。２つ満たす場合は | で区切る
+  //上記のFeatureNamesから選ぶこと
+  //黒板系から１つ、ネットワークから１つ
+  .desk     = MOVABLE_DESK,
+  .charge   = NO_CHARGE,
+  .size     = BIG,
+  .initial_used = {
+    /*     曜日       */
+    { 1, 1, 1, 1, 0 ,0},  /* 1限目 */
+    { 0, 1, 1, 1, 0 ,0},  /* 2 */
+    { 1, 0, 0, 0, 0 ,0},  /* 3 */
+    { 1, 0, 0, 1, 1 ,0},  /* 4 */
+    { 0, 0, 0, 0, 0 ,0},  /* 5 */
+  }, // 授業がある場所は1
+  .used = {{0}},
+  .reserved_count = 0,
+  /* 以降は「詳細な機器」の有無*/
+  .wired_mic = 1, // 本数
+  .wireless_mic = 1, // 本数
+  // 以降はbool
+  .tv            = 0, // ある
+  .bd            = 0,
+  .dvd           = 0, // なし
+  .vhs           = 0,
+  .od            = 1,
+  .pc            = 1,
+.mic           = 1,
+  .hdmi          = 1,
+  .webcam        = 1,
+  .mic_input     = 1,
+  // bool終了
+  .img_count = 1, // .img_paths内の写真の枚数。基本0になるかと 
+  .img_paths = {"/images/rooms/IMG_9140.jpg"
+    
+  }, // ない場合は空っぽで。０枚でも.img_paths = {}と作成すること。
+},
+
+//11B
+
+{
+  .id       = "11B", // 教室名
+  .capacity = 120,    // 座席数
+  .features = (1u << FEAT_BLACKBOARD) | (1u<<FEAT_LAN), //黒板とLANがあるという意味
+  //(1U << あるもの)と書く。２つ満たす場合は | で区切る
+  //上記のFeatureNamesから選ぶこと
+  //黒板系から１つ、ネットワークから１つ
+  .desk     = MOVABLE_DESK,
+  .charge   = NO_CHARGE,
+  .size     = BIG,
+  .initial_used = {
+    /*     曜日       */
+    { 1, 1, 0, 1, 1 ,0},  /* 1限目 */
+    { 1, 1, 1, 1, 1 ,0},  /* 2 */
+    { 1, 1, 0, 1, 1 ,0},  /* 3 */
+    { 1, 0, 0, 0, 0 ,0},  /* 4 */
+    { 0, 0, 0, 0, 0 ,0},  /* 5 */
+  }, // 授業がある場所は1
+  .used = {{0}},
+  .reserved_count = 0,
+  /* 以降は「詳細な機器」の有無*/
+  .wired_mic = 1, // 本数
+  .wireless_mic = 1, // 本数
+  // 以降はbool
+  .tv            = 0, // ある
+  .bd            = 0,
+  .dvd           = 0, // なし
+  .vhs           = 0,
+  .od            = 1,
+  .pc            = 1,
+.mic           = 1,
+  .hdmi          = 1,
+  .webcam        = 1,
+  .mic_input     = 1,
+  // bool終了
+  .img_count = 1, // .img_paths内の写真の枚数。基本0になるかと 
+  .img_paths = {"/images/rooms/IMG_9140.jpg"
+    
+  }, // ない場合は空っぽで。０枚でも.img_paths = {}と作成すること。
+},
+{
+  .id       = "11C",
+  .capacity = 100,
+  .features = (1u << FEAT_BLACKBOARD) | (1u << FEAT_LAN),
+  .desk     = MOVABLE_DESK,
+  .charge   = CHARGE_EXTENSION,
+  .size     = BIG,
+    .initial_used = {
+      /*     曜日       */
+      { 1, 0, 1, 1, 1 ,0},  /* 1限目 */
+      { 1, 0, 1, 1, 1 ,0},  /* 2 */
+      { 1, 1, 0, 1, 1 ,0},  /* 3 */
+      { 1, 1, 0, 1, 0 ,0},  /* 4 */
+      { 0, 0, 0, 0, 0 ,0},  /* 5 */
+    }, // 授業がある場所は1
+  .used = { {0} },
+  .reserved_count = 0,
+  .wired_mic = 1,
+  .wireless_mic = 1,
+  .tv = 0,
+  .bd = 0,
+  .dvd = 0,
+  .vhs = 0,
+  .od = 1,
+  .pc = 1,
+  .mic = 1,
+  .hdmi = 1,
+  .webcam = 1,
+  .mic_input = 1,
+  .img_count = 1,
+  .img_paths = {"/images/rooms/IMG_9140.jpg"}
+},
+{
+  .id       = "11D",
+  .capacity = 135,
+  .features = (1u << FEAT_BLACKBOARD) | (1u << FEAT_LAN),
+  .desk     = MOVABLE_DESK,
+  .charge   = CHARGE_EXTENSION,
+  .size     = BIG,
+      .initial_used = {
+      /*     曜日       */
+      { 1, 1, 1, 1, 1 ,0},  /* 1限目 */
+      { 1, 1, 1, 1, 1 ,0},  /* 2 */
+      { 0, 1, 0, 0, 0 ,0},  /* 3 */
+      { 0, 1, 0, 0, 0 ,0},  /* 4 */
+      { 0, 0, 0, 0, 0 ,0},  /* 5 */
+    }, // 授業がある場所は1
+  .used = { {0} },
+  .reserved_count = 0,
+  .wired_mic = 1,
+  .wireless_mic = 1,
+  .tv = 0,
+  .bd = 0,
+  .dvd = 0,
+  .vhs = 0,
+  .od = 1,
+  .pc = 1,
+  .mic = 1,
+  .hdmi = 1,
+  .webcam = 1,
+  .mic_input = 1,
+  .img_count = 1,
+  .img_paths = {"/images/rooms/IMG_9140.jpg"}
+},
+{
+  .id       = "11E",
+  .capacity = 135,
+  .features = (1u << FEAT_BLACKBOARD) | (1u << FEAT_LAN),
+  .desk     = MOVABLE_DESK,
+  .charge   = CHARGE_EXTENSION,
+  .size     = BIG,
+    .initial_used = {
+      /*     曜日       */
+      { 1, 1, 1, 1, 1 ,0},  /* 1限目 */
+      { 0, 1, 1, 1, 1 ,0},  /* 2 */
+      { 1, 1, 0, 1, 1 ,0},  /* 3 */
+      { 1, 1, 0, 1, 1 ,0},  /* 4 */
+      { 0, 0, 0, 0, 0 ,0},  /* 5 */
+    }, // 授業がある場所は1
+  .used = { {0} },
+  .reserved_count = 0,
+  .wired_mic = 1,
+  .wireless_mic = 1,
+  .tv = 0,
+  .bd = 0,
+  .dvd = 0,
+  .vhs = 0,
+  .od = 1,
+  .pc = 1,
+  .mic = 1,
+  .hdmi = 1,
+  .webcam = 1,
+  .mic_input = 1,
+  .img_count = 1,
+  .img_paths = {"/images/rooms/IMG_9140.jpg"}
+},
+{
+  .id       = "11F",
+  .capacity = 135,
+  .features = (1u << FEAT_BLACKBOARD) | (1u << FEAT_LAN),
+  .desk     = MOVABLE_DESK,
+  .charge   = CHARGE_EXTENSION,
+  .size     = BIG,
+    .initial_used = {
+      /*     曜日       */
+      { 0, 1, 0, 0, 1 ,0},  /* 1限目 */
+      { 1, 1, 1, 1, 1 ,0},  /* 2 */
+      { 0, 1, 0, 0, 1 ,0},  /* 3 */
+      { 1, 0, 0, 0, 1 ,0},  /* 4 */
+      { 0, 0, 0, 0, 0 ,0},  /* 5 */
+    }, // 授業がある場所は1
+  .used = { {0} },
+  .reserved_count = 0,
+  .wired_mic = 1,
+  .wireless_mic = 1,
+  .tv = 0,
+  .bd = 0,
+  .dvd = 0,
+  .vhs = 0,
+  .od = 1,
+  .pc = 1,
+  .mic = 1,
+  .hdmi = 1,
+  .webcam = 1,
+  .mic_input = 1,
+  .img_count = 1,
+  .img_paths = {"/images/rooms/IMG_9140.jpg"}
+  },
     {
   .id       = "12A",
   .capacity = 120,
@@ -1119,7 +1330,7 @@ Room rooms[ROOM_MAX] = {
   }
   };
   
-const int room_count = 30;  /* rooms[] に登録した数 */
+const int room_count = +6+30;  /* rooms[] に登録した数 */
 
 void save_schedule(void) {
   RoomState states[ROOM_MAX];
