@@ -33,6 +33,611 @@ const char *SizeTypeNames[] = {"大", "中", "小"};
 /* rooms[] に必要な数だけ記載 */
 Room rooms[ROOM_MAX] = {
   {
+    .id       = "1BA", // 教室名
+    .capacity = 48,    // 座席数
+    .features = (1u << FEAT_BLACKBOARD) | (1u<<FEAT_LAN), //黒板とLANがあるという意味
+    //(1U << あるもの)と書く。２つ満たす場合は | で区切る
+    //上記のFeatureNamesから選ぶこと
+    //黒板系から１つ、ネットワークから１つ
+    .desk     = MOVABLE_DESK,
+    .charge   = NO_CHARGE,
+    .size     = SMALL,
+    .initial_used = {
+      /*     曜日       */
+      { 0, 0, 0, 0, 0 ,0},  /* 1限目 */
+      { 0, 0, 0, 0, 0 ,0},  /* 2 */
+      { 1, 0, 0, 0, 0 ,0},  /* 3 */
+      { 1, 0, 0, 0, 0 ,0},  /* 4 */
+      { 0, 0, 0, 0, 1 ,0},  /* 5 */
+    }, // 授業がある場所は1
+    .used = {{0}},
+    .reserved_count = 0,
+    /* 以降は「詳細な機器」の有無*/
+    .wired_mic = 1, // 本数
+    .wireless_mic = 1, // 本数
+    // 以降はbool
+    .tv            = 0, // ある
+    .bd            = 0,
+    .dvd           = 0, // なし
+    .vhs           = 0,
+    .od            = 1,
+    .pc            = 1,
+	.mic           = 1,
+    .hdmi          = 1,
+    .webcam        = 1,
+    .mic_input     = 1,
+    // bool終了
+    .img_count = 1, // .img_paths内の写真の枚数。基本0になるかと 
+    .img_paths = { "/images/rooms/basement/g_5_small.jpg"
+      
+    }, // ない場合は空っぽで。０枚でも.img_paths = {}と作成すること。
+  },
+
+
+//1BB
+  
+{
+    .id       = "1BB", // 教室名
+    .capacity = 120,    // 座席数
+    .features = (1u << FEAT_BLACKBOARD) | (1u<<FEAT_LAN), //黒板とLANがあるという意味
+    //(1U << あるもの)と書く。２つ満たす場合は | で区切る
+    //上記のFeatureNamesから選ぶこと
+    //黒板系から１つ、ネットワークから１つ
+    .desk     = MOVABLE_DESK,
+    .charge   = NO_CHARGE,
+    .size     = BIG,
+    .initial_used = {
+      /*     曜日       */
+      { 1, 0, 1, 0, 0 ,0},  /* 1限目 */
+      { 1, 1, 1, 0, 1 ,0},  /* 2 */
+      { 0, 1, 0, 0, 0 ,0},  /* 3 */
+      { 1, 1, 0, 1, 0 ,0},  /* 4 */
+      { 0, 0, 0, 0, 0 ,0},  /* 5 */
+    }, // 授業がある場所は1
+    .used = {{0}},
+    .reserved_count = 0,
+    /* 以降は「詳細な機器」の有無*/
+    .wired_mic = 1, // 本数
+    .wireless_mic = 1, // 本数
+    // 以降はbool
+    .tv            = 0, // ある
+    .bd            = 0,
+    .dvd           = 0, // なし
+    .vhs           = 0,
+    .od            = 1,
+    .pc            = 1,
+	.mic           = 1,
+    .hdmi          = 1,
+    .webcam        = 1,
+    .mic_input     = 1,
+    // bool終了
+    .img_count = 1, // .img_paths内の写真の枚数。基本0になるかと 
+    .img_paths = {"/images/rooms/basement/g_5_big.jpg"
+      
+    }, // ない場合は空っぽで。０枚でも.img_paths = {}と作成すること。
+  },
+
+//1BC
+  
+{
+    .id       = "1BC", // 教室名
+    .capacity = 120,    // 座席数
+    .features = (1u << FEAT_BLACKBOARD) | (1u<<FEAT_LAN), //黒板とLANがあるという意味
+    //(1U << あるもの)と書く。２つ満たす場合は | で区切る
+    //上記のFeatureNamesから選ぶこと
+    //黒板系から１つ、ネットワークから１つ
+    .desk     = MOVABLE_DESK,
+    .charge   = NO_CHARGE,
+    .size     = BIG,
+    .initial_used = {
+      /*     曜日       */
+      { 1, 1, 1, 0, 1 ,0},  /* 1限目 */
+      { 1, 1, 1, 1, 1 ,0},  /* 2 */
+      { 1, 0, 0, 0, 0 ,0},  /* 3 */
+      { 1, 1, 0, 0, 1 ,0},  /* 4 */
+      { 0, 0, 0, 0, 0 ,0},  /* 5 */
+    }, // 授業がある場所は1
+    .used = {{0}},
+    .reserved_count = 0,
+    /* 以降は「詳細な機器」の有無*/
+    .wired_mic = 1, // 本数
+    .wireless_mic = 1, // 本数
+    // 以降はbool
+    .tv            = 0, // ある
+    .bd            = 0,
+    .dvd           = 0, // なし
+    .vhs           = 0,
+    .od            = 1,
+    .pc            = 1,
+	.mic           = 1,
+    .hdmi          = 1,
+    .webcam        = 1,
+    .mic_input     = 1,
+    // bool終了
+    .img_count = 1, // .img_paths内の写真の枚数。基本0になるかと 
+    .img_paths = {"/images/rooms/basement/g_5_big.jpg"
+      
+    }, // ない場合は空っぽで。０枚でも.img_paths = {}と作成すること。
+  },
+
+
+//1BD
+  
+{
+    .id       = "1BD", // 教室名
+    .capacity = 120,    // 座席数
+    .features = (1u << FEAT_BLACKBOARD) | (1u<<FEAT_LAN), //黒板とLANがあるという意味
+    //(1U << あるもの)と書く。２つ満たす場合は | で区切る
+    //上記のFeatureNamesから選ぶこと
+    //黒板系から１つ、ネットワークから１つ
+    .desk     = MOVABLE_DESK,
+    .charge   = NO_CHARGE,
+    .size     = BIG,
+    .initial_used = {
+      /*     曜日       */
+      { 1, 1, 1, 1, 0 ,0},  /* 1限目 */
+      { 1, 1, 1, 1, 1 ,0},  /* 2 */
+      { 0, 1, 0, 0, 1 ,0},  /* 3 */
+      { 0, 0, 0, 0, 1 ,0},  /* 4 */
+      { 0, 0, 0, 0, 0 ,0},  /* 5 */
+    }, // 授業がある場所は1
+    .used = {{0}},
+    .reserved_count = 0,
+    /* 以降は「詳細な機器」の有無*/
+    .wired_mic = 1, // 本数
+    .wireless_mic = 1, // 本数
+    // 以降はbool
+    .tv            = 0, // ある
+    .bd            = 0,
+    .dvd           = 0, // なし
+    .vhs           = 0,
+    .od            = 1,
+    .pc            = 1,
+	.mic           = 1,
+    .hdmi          = 1,
+    .webcam        = 1,
+    .mic_input     = 1,
+    // bool終了
+    .img_count = 1, // .img_paths内の写真の枚数。基本0になるかと 
+    .img_paths = {"/images/rooms/basement/g_5_big.jpg"
+      
+    }, // ない場合は空っぽで。０枚でも.img_paths = {}と作成すること。
+  },
+  
+
+//1BE
+  
+{
+    .id       = "1BE", // 教室名
+    .capacity = 48,    // 座席数
+    .features = (1u << FEAT_BLACKBOARD) | (1u<<FEAT_LAN), //黒板とLANがあるという意味
+    //(1U << あるもの)と書く。２つ満たす場合は | で区切る
+    //上記のFeatureNamesから選ぶこと
+    //黒板系から１つ、ネットワークから１つ
+    .desk     = MOVABLE_DESK,
+    .charge   = NO_CHARGE,
+    .size     = SMALL,
+    .initial_used = {
+      /*     曜日       */
+      { 0, 0, 0, 0, 0 ,0},  /* 1限目 */
+      { 0, 0, 0, 0, 0 ,0},  /* 2 */
+      { 1, 0, 0, 0, 0 ,0},  /* 3 */
+      { 1, 0, 0, 0, 0 ,0},  /* 4 */
+      { 0, 0, 0, 0, 0 ,0},  /* 5 */
+    }, // 授業がある場所は1
+    .used = {{0}},
+    .reserved_count = 0,
+    /* 以降は「詳細な機器」の有無*/
+    .wired_mic = 1, // 本数
+    .wireless_mic = 1, // 本数
+    // 以降はbool
+    .tv            = 0, // ある
+    .bd            = 0,
+    .dvd           = 0, // なし
+    .vhs           = 0,
+    .od            = 1,
+    .pc            = 1,
+	.mic           = 1,
+    .hdmi          = 1,
+    .webcam        = 1,
+    .mic_input     = 1,
+    // bool終了
+    .img_count = 1, // .img_paths内の写真の枚数。基本0になるかと 
+    .img_paths = {"/images/rooms/basement/b_4_small.jpg"
+      
+    }, // ない場合は空っぽで。０枚でも.img_paths = {}と作成すること。
+  },
+
+  
+//1BF
+  
+{
+    .id       = "1BF", // 教室名
+    .capacity = 48,    // 座席数
+    .features = (1u << FEAT_BLACKBOARD) | (1u<<FEAT_LAN), //黒板とLANがあるという意味
+    //(1U << あるもの)と書く。２つ満たす場合は | で区切る
+    //上記のFeatureNamesから選ぶこと
+    //黒板系から１つ、ネットワークから１つ
+    .desk     = MOVABLE_DESK,
+    .charge   = NO_CHARGE,
+    .size     = SMALL,
+    .initial_used = {
+      /*     曜日       */
+      { 0, 0, 0, 0, 0 ,0},  /* 1限目 */
+      { 0, 0, 0, 0, 0 ,0},  /* 2 */
+      { 1, 0, 0, 0, 0 ,0},  /* 3 */
+      { 1, 0, 0, 0, 0 ,0},  /* 4 */
+      { 0, 0, 0, 0, 0 ,0},  /* 5 */
+    }, // 授業がある場所は1
+    .used = {{0}},
+    .reserved_count = 0,
+    /* 以降は「詳細な機器」の有無*/
+    .wired_mic = 1, // 本数
+    .wireless_mic = 1, // 本数
+    // 以降はbool
+    .tv            = 0, // ある
+    .bd            = 0,
+    .dvd           = 0, // なし
+    .vhs           = 0,
+    .od            = 1,
+    .pc            = 1,
+	.mic           = 1,
+    .hdmi          = 1,
+    .webcam        = 1,
+    .mic_input     = 1,
+    // bool終了
+    .img_count = 1, // .img_paths内の写真の枚数。基本0になるかと 
+    .img_paths = {"/images/rooms/basement/b_4_small.jpg"
+      
+    }, // ない場合は空っぽで。０枚でも.img_paths = {}と作成すること。
+  },
+
+  //1BG
+  
+{
+    .id       = "1BG", // 教室名
+    .capacity = 48,    // 座席数
+    .features = (1u << FEAT_BLACKBOARD) | (1u<<FEAT_LAN), //黒板とLANがあるという意味
+    //(1U << あるもの)と書く。２つ満たす場合は | で区切る
+    //上記のFeatureNamesから選ぶこと
+    //黒板系から１つ、ネットワークから１つ
+    .desk     = MOVABLE_DESK,
+    .charge   = NO_CHARGE,
+    .size     = SMALL,
+    .initial_used = {
+      /*     曜日       */
+      { 0, 0, 0, 0, 0 ,0},  /* 1限目 */
+      { 0, 1, 0, 0, 0 ,0},  /* 2 */
+      { 1, 1, 0, 0, 0 ,0},  /* 3 */
+      { 1, 0, 0, 0, 0 ,0},  /* 4 */
+      { 0, 0, 0, 0, 0 ,0},  /* 5 */
+    }, // 授業がある場所は1
+    .used = {{0}},
+    .reserved_count = 0,
+    /* 以降は「詳細な機器」の有無*/
+    .wired_mic = 1, // 本数
+    .wireless_mic = 1, // 本数
+    // 以降はbool
+    .tv            = 0, // ある
+    .bd            = 0,
+    .dvd           = 0, // なし
+    .vhs           = 0,
+    .od            = 1,
+    .pc            = 1,
+	.mic           = 1,
+    .hdmi          = 1,
+    .webcam        = 1,
+    .mic_input     = 1,
+    // bool終了
+    .img_count = 1, // .img_paths内の写真の枚数。基本0になるかと 
+    .img_paths = {"/images/rooms/basement/b_4_small.jpg"
+      
+    }, // ない場合は空っぽで。０枚でも.img_paths = {}と作成すること。
+  },
+
+  //1BH
+  
+{
+    .id       = "1BH", // 教室名
+    .capacity = 48,    // 座席数
+    .features = (1u << FEAT_BLACKBOARD) | (1u<<FEAT_LAN), //黒板とLANがあるという意味
+    //(1U << あるもの)と書く。２つ満たす場合は | で区切る
+    //上記のFeatureNamesから選ぶこと
+    //黒板系から１つ、ネットワークから１つ
+    .desk     = MOVABLE_DESK,
+    .charge   = NO_CHARGE,
+    .size     = SMALL,
+    .initial_used = {
+      /*     曜日       */
+      { 0, 0, 0, 0, 0 ,0},  /* 1限目 */
+      { 0, 0, 0, 0, 0 ,0},  /* 2 */
+      { 1, 0, 0, 0, 0 ,0},  /* 3 */
+      { 1, 0, 0, 0, 0 ,0},  /* 4 */
+      { 0, 0, 0, 0, 0 ,0},  /* 5 */
+    }, // 授業がある場所は1
+    .used = {{0}},
+    .reserved_count = 0,
+    /* 以降は「詳細な機器」の有無*/
+    .wired_mic = 1, // 本数
+    .wireless_mic = 1, // 本数
+    // 以降はbool
+    .tv            = 0, // ある
+    .bd            = 0,
+    .dvd           = 0, // なし
+    .vhs           = 0,
+    .od            = 1,
+    .pc            = 1,
+	.mic           = 1,
+    .hdmi          = 1,
+    .webcam        = 1,
+    .mic_input     = 1,
+    // bool終了
+    .img_count = 1, // .img_paths内の写真の枚数。基本0になるかと 
+    .img_paths = {"/images/rooms/basement/b_4_small.jpg"
+      
+    }, // ない場合は空っぽで。０枚でも.img_paths = {}と作成すること。
+  },
+
+//1BJ
+  
+{
+    .id       = "1BJ", // 教室名
+    .capacity = 135,    // 座席数
+    .features = (1u << FEAT_BLACKBOARD) | (1u<<FEAT_LAN), //黒板とLANがあるという意味
+    //(1U << あるもの)と書く。２つ満たす場合は | で区切る
+    //上記のFeatureNamesから選ぶこと
+    //黒板系から１つ、ネットワークから１つ
+    .desk     = MOVABLE_DESK,
+    .charge   = NO_CHARGE,
+    .size     = BIG,
+    .initial_used = {
+      /*     曜日       */
+      { 1, 1, 1, 1, 1 ,0},  /* 1限目 */
+      { 1, 0, 1, 1, 1 ,0},  /* 2 */
+      { 1, 1, 0, 0, 0 ,0},  /* 3 */
+      { 0, 1, 0, 1, 1 ,0},  /* 4 */
+      { 0, 0, 0, 0, 0 ,0},  /* 5 */
+    }, // 授業がある場所は1
+    .used = {{0}},
+    .reserved_count = 0,
+    /* 以降は「詳細な機器」の有無*/
+    .wired_mic = 1, // 本数
+    .wireless_mic = 1, // 本数
+    // 以降はbool
+    .tv            = 0, // ある
+    .bd            = 0,
+    .dvd           = 0, // なし
+    .vhs           = 0,
+    .od            = 1,
+    .pc            = 0,
+	.mic           = 1,
+    .hdmi          = 1,
+    .webcam        = 1,
+    .mic_input     = 1,
+    // bool終了
+    .img_count = 1, // .img_paths内の写真の枚数。基本0になるかと 
+    .img_paths = {"/images/rooms/basement/g_5_big.jpg"
+      
+    }, // ない場合は空っぽで。０枚でも.img_paths = {}と作成すること。
+  },
+
+//1BK
+  
+{
+    .id       = "1BK", // 教室名
+    .capacity = 60,    // 座席数
+    .features = (1u << FEAT_BLACKBOARD) | (1u<<FEAT_LAN), //黒板とLANがあるという意味
+    //(1U << あるもの)と書く。２つ満たす場合は | で区切る
+    //上記のFeatureNamesから選ぶこと
+    //黒板系から１つ、ネットワークから１つ
+    .desk     = MOVABLE_DESK,
+    .charge   = NO_CHARGE,
+    .size     = MID,
+    .initial_used = {
+      /*     曜日       */
+      { 0, 1, 0, 0, 0 ,0},  /* 1限目 */
+      { 1, 1, 0, 1, 0 ,0},  /* 2 */
+      { 1, 1, 0, 0, 0 ,0},  /* 3 */
+      { 1, 0, 0, 0, 0 ,0},  /* 4 */
+      { 0, 0, 0, 0, 0 ,0},  /* 5 */
+    }, // 授業がある場所は1
+    .used = {{0}},
+    .reserved_count = 0,
+    /* 以降は「詳細な機器」の有無*/
+    .wired_mic = 1, // 本数
+    .wireless_mic = 1, // 本数
+    // 以降はbool
+    .tv            = 0, // ある
+    .bd            = 0,
+    .dvd           = 0, // なし
+    .vhs           = 0,
+    .od            = 1,
+    .pc            = 1,
+	.mic           = 1,
+    .hdmi          = 1,
+    .webcam        = 1,
+    .mic_input     = 1,
+    // bool終了
+    .img_count = 1, // .img_paths内の写真の枚数。基本0になるかと 
+    .img_paths = {"/images/rooms/basement/b_5_small.jpg"
+      
+    }, // ない場合は空っぽで。０枚でも.img_paths = {}と作成すること。
+  },
+
+
+//1BL
+  
+{
+    .id       = "1BL", // 教室名
+    .capacity = 135,    // 座席数
+    .features = (1u << FEAT_BLACKBOARD) | (1u<<FEAT_LAN), //黒板とLANがあるという意味
+    //(1U << あるもの)と書く。２つ満たす場合は | で区切る
+    //上記のFeatureNamesから選ぶこと
+    //黒板系から１つ、ネットワークから１つ
+    .desk     = MOVABLE_DESK,
+    .charge   = NO_CHARGE,
+    .size     = BIG,
+    .initial_used = {
+      /*     曜日       */
+      { 1, 0, 1, 1, 0 ,0},  /* 1限目 */
+      { 1, 0, 1, 1, 0 ,0},  /* 2 */
+      { 0, 1, 0, 0, 0 ,0},  /* 3 */
+      { 1, 1, 0, 0, 0 ,0},  /* 4 */
+      { 0, 0, 0, 0, 0 ,0},  /* 5 */
+    }, // 授業がある場所は1
+    .used = {{0}},
+    .reserved_count = 0,
+    /* 以降は「詳細な機器」の有無*/
+    .wired_mic = 1, // 本数
+    .wireless_mic = 1, // 本数
+    // 以降はbool
+    .tv            = 0, // ある
+    .bd            = 0,
+    .dvd           = 0, // なし
+    .vhs           = 0,
+    .od            = 1,
+    .pc            = 1,
+	.mic           = 1,
+    .hdmi          = 1,
+    .webcam        = 1,
+    .mic_input     = 1,
+    // bool終了
+    .img_count = 1, // .img_paths内の写真の枚数。基本0になるかと 
+    .img_paths = {"/images/rooms/basement/g_5_big.jpg"
+      
+    }, // ない場合は空っぽで。０枚でも.img_paths = {}と作成すること。
+  },
+
+//1BM
+  
+{
+    .id       = "1BM", // 教室名
+    .capacity = 135,    // 座席数
+    .features = (1u << FEAT_BLACKBOARD) | (1u<<FEAT_LAN), //黒板とLANがあるという意味
+    //(1U << あるもの)と書く。２つ満たす場合は | で区切る
+    //上記のFeatureNamesから選ぶこと
+    //黒板系から１つ、ネットワークから１つ
+    .desk     = MOVABLE_DESK,
+    .charge   = NO_CHARGE,
+    .size     = BIG,
+    .initial_used = {
+      /*     曜日       */
+      { 1, 1, 1, 1, 1 ,0},  /* 1限目 */
+      { 0, 1, 1, 1, 0 ,0},  /* 2 */
+      { 1, 1, 0, 1, 1 ,0},  /* 3 */
+      { 1, 1, 0, 1, 1 ,0},  /* 4 */
+      { 0, 0, 0, 0, 0 ,0},  /* 5 */
+    }, // 授業がある場所は1
+    .used = {{0}},
+    .reserved_count = 0,
+    /* 以降は「詳細な機器」の有無*/
+    .wired_mic = 1, // 本数
+    .wireless_mic = 1, // 本数
+    // 以降はbool
+    .tv            = 0, // ある
+    .bd            = 0,
+    .dvd           = 0, // なし
+    .vhs           = 0,
+    .od            = 1,
+    .pc            = 1,
+	.mic           = 1,
+    .hdmi          = 1,
+    .webcam        = 1,
+    .mic_input     = 1,
+    // bool終了
+    .img_count = 1, // .img_paths内の写真の枚数。基本0になるかと 
+    .img_paths = {"/images/rooms/basement/g_5_big.jpg"
+      
+    }, // ない場合は空っぽで。０枚でも.img_paths = {}と作成すること。
+  },
+
+
+//1BN
+  
+{
+    .id       = "1BN", // 教室名
+    .capacity = 135,    // 座席数
+    .features = (1u << FEAT_BLACKBOARD) | (1u<<FEAT_LAN), //黒板とLANがあるという意味
+    //(1U << あるもの)と書く。２つ満たす場合は | で区切る
+    //上記のFeatureNamesから選ぶこと
+    //黒板系から１つ、ネットワークから１つ
+    .desk     = MOVABLE_DESK,
+    .charge   = NO_CHARGE,
+    .size     = BIG,
+    .initial_used = {
+      /*     曜日       */
+      { 1, 0, 1, 1, 0 ,0},  /* 1限目 */
+      { 1, 0, 1, 1, 0 ,0},  /* 2 */
+      { 1, 1, 0, 1, 1 ,0},  /* 3 */
+      { 0, 0, 0, 0, 0 ,0},  /* 4 */
+      { 0, 0, 0, 0, 0 ,0},  /* 5 */
+    }, // 授業がある場所は1
+    .used = {{0}},
+    .reserved_count = 0,
+    /* 以降は「詳細な機器」の有無*/
+    .wired_mic = 1, // 本数
+    .wireless_mic = 1, // 本数
+    // 以降はbool
+    .tv            = 0, // ある
+    .bd            = 0,
+    .dvd           = 0, // なし
+    .vhs           = 0,
+    .od            = 1,
+    .pc            = 1,
+	.mic           = 1,
+    .hdmi          = 1,
+    .webcam        = 1,
+    .mic_input     = 1,
+    // bool終了
+    .img_count = 1, // .img_paths内の写真の枚数。基本0になるかと 
+    .img_paths = {"/images/rooms/basement/g_5_big.jpg"
+      
+    }, // ない場合は空っぽで。０枚でも.img_paths = {}と作成すること。
+  },
+
+//1BP
+  
+{
+    .id       = "1BP", // 教室名
+    .capacity = 60,    // 座席数
+    .features = (1u << FEAT_BLACKBOARD) | (1u<<FEAT_LAN), //黒板とLANがあるという意味
+    //(1U << あるもの)と書く。２つ満たす場合は | で区切る
+    //上記のFeatureNamesから選ぶこと
+    //黒板系から１つ、ネットワークから１つ
+    .desk     = MOVABLE_DESK,
+    .charge   = NO_CHARGE,
+    .size     = MID,
+    .initial_used = {
+      /*     曜日       */
+      { 0, 0, 0, 0, 0 ,0},  /* 1限目 */
+      { 0, 0, 1, 0, 0 ,0},  /* 2 */
+      { 0, 0, 0, 0, 0 ,0},  /* 3 */
+      { 0, 0, 0, 0, 0 ,0},  /* 4 */
+      { 0, 0, 0, 0, 0 ,0},  /* 5 */
+    }, // 授業がある場所は1
+    .used = {{0}},
+    .reserved_count = 0,
+    /* 以降は「詳細な機器」の有無*/
+    .wired_mic = 1, // 本数
+    .wireless_mic = 1, // 本数
+    // 以降はbool
+    .tv            = 0, // ある
+    .bd            = 0,
+    .dvd           = 0, // なし
+    .vhs           = 0,
+    .od            = 1,
+    .pc            = 1,
+	.mic           = 1,
+    .hdmi          = 1,
+    .webcam        = 1,
+    .mic_input     = 1,
+    // bool終了
+    .img_count = 1, // .img_paths内の写真の枚数。基本0になるかと 
+    .img_paths = {"/images/rooms/basement/g_5_small.jpg"
+      
+    }, // ない場合は空っぽで。０枚でも.img_paths = {}と作成すること。
+  },
+  {
   .id       = "11A", // 教室名
   .capacity = 120,    // 座席数
   .features = (1u << FEAT_BLACKBOARD) | (1u<<FEAT_LAN), //黒板とLANがあるという意味
@@ -68,7 +673,7 @@ Room rooms[ROOM_MAX] = {
   .mic_input     = 1,
   // bool終了
   .img_count = 1, // .img_paths内の写真の枚数。基本0になるかと 
-  .img_paths = {"/images/rooms/IMG_9140.jpg"
+  .img_paths = {"/images/rooms/11/IMG_9140.jpg"
     
   }, // ない場合は空っぽで。０枚でも.img_paths = {}と作成すること。
 },
@@ -111,7 +716,7 @@ Room rooms[ROOM_MAX] = {
   .mic_input     = 1,
   // bool終了
   .img_count = 1, // .img_paths内の写真の枚数。基本0になるかと 
-  .img_paths = {"/images/rooms/IMG_9140.jpg"
+  .img_paths = {"/images/rooms/11/IMG_9140.jpg"
     
   }, // ない場合は空っぽで。０枚でも.img_paths = {}と作成すること。
 },
@@ -145,7 +750,7 @@ Room rooms[ROOM_MAX] = {
   .webcam = 1,
   .mic_input = 1,
   .img_count = 1,
-  .img_paths = {"/images/rooms/IMG_9140.jpg"}
+  .img_paths = {"/images/rooms/11/IMG_9140.jpg"}
 },
 {
   .id       = "11D",
@@ -177,7 +782,7 @@ Room rooms[ROOM_MAX] = {
   .webcam = 1,
   .mic_input = 1,
   .img_count = 1,
-  .img_paths = {"/images/rooms/IMG_9140.jpg"}
+  .img_paths = {"/images/rooms/11/IMG_9140.jpg"}
 },
 {
   .id       = "11E",
@@ -209,7 +814,7 @@ Room rooms[ROOM_MAX] = {
   .webcam = 1,
   .mic_input = 1,
   .img_count = 1,
-  .img_paths = {"/images/rooms/IMG_9140.jpg"}
+  .img_paths = {"/images/rooms/11/IMG_9140.jpg"}
 },
 {
   .id       = "11F",
@@ -241,7 +846,7 @@ Room rooms[ROOM_MAX] = {
   .webcam = 1,
   .mic_input = 1,
   .img_count = 1,
-  .img_paths = {"/images/rooms/IMG_9140.jpg"}
+  .img_paths = {"/images/rooms/11/IMG_9140.jpg"}
   },
     {
   .id       = "12A",
@@ -1330,7 +1935,7 @@ Room rooms[ROOM_MAX] = {
   }
   };
   
-const int room_count = +6+30;  /* rooms[] に登録した数 */
+const int room_count = 14+6+30;  /* rooms[] に登録した数 */
 
 void save_schedule(void) {
   RoomState states[ROOM_MAX];
