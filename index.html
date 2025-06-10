@@ -15,10 +15,12 @@
     h1 {
       text-align: center;
       color: #2c3e50;
+      margin: 0 0 1rem;  /* 余白を少し調整 */
+      line-height: 1;    /* 画像の上下に余白が出ないように */
     }
-    /* 追加: 見出し内の画像サイズを文字サイズに合わせる */
+    /* 見出し内の画像を h1 と同じ高さにする */
     h1 img {
-      height: 1em;   /* h1 のフォントサイズと同じ高さにする */
+      height: 1em;       /* h1 のフォントサイズと同じ高さにする */
       vertical-align: middle;
     }
 
@@ -111,14 +113,11 @@
   </style>
 </head>
 <body>
-  <header style="display:flex;justify-content:space-between;align-items:center;
-               padding:12px 20px;background:#fff;border-bottom:1px solid #ddd;">
+  <header style="display:flex;justify-content:space-between;align-items:center; padding:12px 20px;background:#fff;border-bottom:1px solid #ddd;">
     <h2 style="margin:0;font-size:20px;">教室予約システム</h2>
     <div>
       <span id="loginInfo"></span>
-      <button id="logoutBtn"
-              style="margin-left:12px;padding:4px 10px;border:1px solid #ccc;
-                     border-radius:4px;cursor:pointer">ログアウト</button>
+      <button id="logoutBtn" style="margin-left:12px;padding:4px 10px;border:1px solid #ccc;border-radius:4px;cursor:pointer">ログアウト</button>
     </div>
   </header>
 
@@ -138,12 +137,12 @@
   })();
   </script>
 
-  <!-- 見出しを画像に置き換え -->
+  <!-- 見出しを画像のみに置き換え -->
   <h1>
-    <img src="./images/other/TCU.jpg" alt="空き教室検索">
+    <img src="./images/other/TCU.jpg" alt="">
   </h1>
 
-  <!-- 追加: サーバー時刻表示 -->
+  <!-- サーバー時刻表示 -->
   <div style="text-align:center; margin-bottom:1em;">
     現在時刻：<span id="serverTime">読み込み中…</span>
   </div>
@@ -239,10 +238,7 @@
           const info = getRoomInfo(room);
           html += `<li>
               <a href="room.html?room=${room}">${room}（${info}）</a>
-              <button class="reserve"
-                onclick="reserveRoom('${room}', ${day}, ${period})">
-                予約する
-              </button>
+              <button class="reserve" onclick="reserveRoom('${room}', ${day}, ${period})">予約する</button>
             </li>`;
         });
         html += `</ul>`;
@@ -251,45 +247,37 @@
     }
 
     async function reserveRoom(room, day, period) {
-    const uid = localStorage.getItem("uid");
-    const dayNames = ["月","火","水","木","金"];
-    if (!confirm(`${room} を${dayNames[day]}曜日 ${period}限で予約しますか？`)) return;
+      const uid = localStorage.getItem("uid");
+      const dayNames = ["月","火","水","木","金"];
+      if (!confirm(`${room} を${dayNames[day]}曜日 ${period}限で予約しますか？`)) return;
 
-    const people = parseInt(prompt("何人で利用しますか？", "1"), 10);
-    if (isNaN(people) || people <= 0) {
-      alert("利用人数を正しい数値で入力してください");
-      return;
-    }
-
-    try {
-      /* --- 予約リクエスト --- */
-      const res = await fetch("/cgi-bin/reserve.cgi", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ 
-          user: uid,
-          room,
-          day: Number(day),
-          period: Number(period),
-          people
-        })
-      });
-      if (!res.ok) throw new Error(`HTTP ${res.status}`);
-      const result = await res.json();
-
-      /* --- メッセージ表示 --- */
-      if (result.success) {
-        alert("予約完了");
-        search();                  // 検索結果を更新
-      } else {
-        alert("失敗: " + (result.message ?? "原因不明"));
+      const people = parseInt(prompt("何人で利用しますか？", "1"), 10);
+      if (isNaN(people) || people <= 0) {
+        alert("利用人数を正しい数値で入力してください");
+        return;
       }
-    } catch (e) {
-      alert("通信エラー: " + e);
-    }
-  }
 
+      try {
+        const res = await fetch("/cgi-bin/reserve.cgi", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ user: uid, room, day: Number(day), period: Number(period), people })
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const result = await res.json();
+
+        if (result.success) {
+          alert("予約完了");
+          search();
+        } else {
+          alert("失敗: " + (result.message ?? "原因不明"));
+        }
+      } catch (e) {
+        alert("通信エラー: " + e);
+      }
+    }
   </script>
+
   <nav>
     <a href="my_reservations.html">マイ予約一覧</a>
   </nav>
