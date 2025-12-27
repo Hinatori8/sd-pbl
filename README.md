@@ -135,7 +135,20 @@ C 言語の作成によって結果的に手続き的な実装となりました
 <img width="600" src="https://github.com/user-attachments/assets/03463dbc-b1e5-43e8-8c89-2a9d498a7bfa" />
 </p>
 そこでユーザーの要望に対してどれだけ教室が合っているのかを点数化して、一番点数が高かった教室を提案するシステムを考えました。
-紫色がユーザーが希望する利用者数です。これがそのまま教室の空き席数となります。同じ数なら最大点を与え、遠のくほど点数は低くなります(赤色)。また、各教室の空き席数が青色となり、交点が点数となります。
+紫色がユーザーが希望する利用者数です。これがそのまま教室の空き席数となります。同じ数なら最大点(20点)を与え、遠のくほど点数は低くなります(赤色)。赤色の関数は
+
+```c
+int Lorentz_function(int cls, int numbers) {
+  double numerator = 20.0;
+  double denominator = 1 + 0.0027*pow((cls - numbers), 2);
+  if(cls < numbers) return 0;
+  return round(numerator/denominator);
+}
+```
+
+となります。`double cls`が各教室の空き席数、`double numbers`がユーザーの要望数です。`cls`が`for`文によって値が変わっていき、各教室のデータと`numbers`と比較していきます。
+
+各教室の空き席数が青色となり、交点が点数となります。
 ※紫色より左は座席が足りないため、0点になるようにします。
 <p align="center">
 <img width="600" src="https://github.com/user-attachments/assets/70673526-83cb-4984-a34b-83c0c5df3398" />
