@@ -129,11 +129,13 @@ C 言語の作成によって結果的に手続き的な実装となりました
 <p align="center">
 <img width="600"  src="https://github.com/user-attachments/assets/99756813-b1e7-4d7c-8732-c2b2086d478d" />
 </p>
+
 少ない人数が大きい教室を使用する可能性があり、教室利用者の最大化を図りました。また、ユーザーが欲しい設備が反映される機能も考えました。
 
 <p align="center">
 <img width="600" src="https://github.com/user-attachments/assets/03463dbc-b1e5-43e8-8c89-2a9d498a7bfa" />
 </p>
+
 そこでユーザーの要望に対してどれだけ教室が合っているのかを点数化して、一番点数が高かった教室を提案するシステムを考えました。
 紫色がユーザーが希望する利用者数です。これがそのまま教室の空き席数となります。同じ数なら最大点(20点)を与え、遠のくほど点数は低くなります(赤色)。赤色の関数は
 
@@ -153,6 +155,7 @@ int Lorentz_function(int cls, int numbers) {
 <p align="center">
 <img width="600" src="https://github.com/user-attachments/assets/70673526-83cb-4984-a34b-83c0c5df3398" />
 </p>
+
 他にもユーザーの要望にどれだけ従っているかをOption評価点として加えていきます。曜日と時限がなければ0点、あれば1点にします。
 こうすることで、**総合評価点が0点のものは出力しない**とシステムを組むことができると考えたからです。
 
